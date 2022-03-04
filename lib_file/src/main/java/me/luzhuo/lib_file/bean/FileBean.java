@@ -16,6 +16,8 @@ package me.luzhuo.lib_file.bean;
 
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 /**
  * Description: 供 FileStoreManager 使用
  * @Author: Luzhuo
@@ -32,31 +34,37 @@ public class FileBean extends CheckableFileBean {
     /**
      * 文件名
      */
+    @NonNull
     public String fileName;
 
     /**
      * MimeType
      */
+    @NonNull
     public String mimeType;
 
     /**
      * Uri类型的文件路径, 一般用于API >= 29
      */
+    @NonNull
     public Uri uriPath;
 
     /**
      * Url类型的文件路径, 一般用于API < 29
      */
+    @NonNull
     public String urlPath;
 
     /**
      * 相册ID
      */
+    @NonNull
     public long bucketId;
 
     /**
      * 相册名称
      */
+    @NonNull
     public String bucketName;
 
     /**
@@ -69,7 +77,7 @@ public class FileBean extends CheckableFileBean {
      */
     public long addedDate;
 
-    public FileBean(long id, String fileName, String mimeType, Uri uriPath, String urlPath, long bucketId, String bucketName, long size, long addedDate) {
+    public FileBean(long id, @NonNull String fileName, @NonNull String mimeType, @NonNull Uri uriPath, @NonNull String urlPath, long bucketId, @NonNull String bucketName, long size, long addedDate) {
         this.id = id;
         this.fileName = fileName;
         this.mimeType = mimeType;

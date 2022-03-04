@@ -16,6 +16,8 @@ package me.luzhuo.lib_file.bean;
 
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
 /**
  * Description: 视频文件类型
  * @Author: Luzhuo
@@ -37,6 +39,13 @@ public class VideoFileBean extends FileBean {
      * 视频的时长
      */
     public int duration;
+
+    /**
+     * 视频Url封面, 300 * 300
+     * 视频生成封面比较耗时, 系统数据库并未提供封面, 所有由后续添加
+     */
+    @Nullable
+    public String coverUrlPath;
 
     public VideoFileBean(long id, String fileName, String mimeType, Uri uriPath, String urlPath, long bucketId, String bucketName, long size, long addedDate, int width, int height, int duration) {
         super(id, fileName, mimeType, uriPath, urlPath, bucketId, bucketName, size, addedDate);

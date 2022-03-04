@@ -135,7 +135,7 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
     @Override
     public void onCameraCallback(String s) {
         File file = new File(s);
-        Pair<Integer, Integer> size = fileManager.getImageWidthHeight(this, s);
+        Pair<Integer, Integer> size = fileManager.getImageWidthHeight(s);
         ImageFileBean fileBean = new ImageFileBean(0, file.getName(), "image/jpeg", Uri.fromFile(file), file.getAbsolutePath(), -1, "Camera", file.length(), System.currentTimeMillis() / 1000, size.first, size.second);
         fileBean.isChecked = true;
         lists.add(0, fileBean);

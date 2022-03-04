@@ -225,8 +225,8 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
             }
 
             boolean isExists;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) isExists = fileManager.exists(context, data.uriPath);
-            else isExists = fileManager.exists(context, data.urlPath);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) isExists = fileManager.exists(data.uriPath);
+            else isExists = fileManager.exists(data.urlPath);
             if (!isExists) {
                 toastFileError();
                 return;

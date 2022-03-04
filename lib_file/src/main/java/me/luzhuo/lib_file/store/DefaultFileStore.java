@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.RestrictTo;
 import me.luzhuo.lib_file.FileManager;
 import me.luzhuo.lib_file.bean.AudioFileBean;
 import me.luzhuo.lib_file.bean.FileBean;
@@ -44,8 +45,12 @@ import me.luzhuo.lib_file.enums.FileType;
  * @Creation Date: 2021/11/13 11:42
  * @Copyright: Copyright 2021 Luzhuo. All rights reserved.
  **/
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class DefaultFileStore implements FileStore {
     private FileManager fileManager = new FileManager();
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    public DefaultFileStore() {}
 
     @Override
     public boolean saveFile(Context context, String fileName, String folder, String mimeType, InputStream inputStream) {

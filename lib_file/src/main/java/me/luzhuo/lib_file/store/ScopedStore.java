@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.RestrictTo;
 import me.luzhuo.lib_file.FileManager;
 import me.luzhuo.lib_file.bean.AudioFileBean;
 import me.luzhuo.lib_file.bean.FileBean;
@@ -45,8 +46,12 @@ import me.luzhuo.lib_file.enums.MIMETypes;
  * @Copyright: Copyright 2021 Luzhuo. All rights reserved.
  **/
 @RequiresApi(api = Build.VERSION_CODES.Q)
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class ScopedStore implements FileStore {
     private FileManager file = new FileManager();
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    public ScopedStore() {}
 
     @Override
     public boolean saveFile(Context context, String fileName, String folder, String mimeType, InputStream inputStream) {

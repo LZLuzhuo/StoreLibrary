@@ -37,6 +37,8 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import me.luzhuo.lib_core.app.base.CoreBaseApplication;
 import me.luzhuo.lib_core.data.DataCheck;
 
@@ -57,7 +59,7 @@ public class FileManager {
         format.setRoundingMode(RoundingMode.HALF_UP);
     }
 
-    public FileManager(Context context) {
+    public FileManager(@NonNull Context context) {
         this.context = context;
     }
 
@@ -71,7 +73,7 @@ public class FileManager {
      * @param filePath  local file path
      * @throws IOException
      */
-    public void Stream2File(InputStream stream, String filePath) throws IOException {
+    public void Stream2File(@NonNull InputStream stream, @NonNull String filePath) throws IOException {
 
         File localFile = new File(filePath);
         if(!localFile.getParentFile().exists()) localFile.getParentFile().mkdirs();
@@ -96,7 +98,7 @@ public class FileManager {
      * @param filePath save file path
      * @throws IOException
      */
-    public void Bitmap2PNGFile(Bitmap bitmap, String filePath) throws IOException {
+    public void Bitmap2PNGFile(@NonNull Bitmap bitmap, @NonNull String filePath) throws IOException {
         File localFile = new File(filePath);
         if (!localFile.getParentFile().exists()) localFile.getParentFile().mkdirs();
         if (!localFile.exists()) localFile.createNewFile();
@@ -113,7 +115,7 @@ public class FileManager {
      * @param filePath save file path
      * @throws IOException
      */
-    public void Bitmap2JPGFile(Bitmap bitmap, String filePath) throws IOException {
+    public void Bitmap2JPGFile(@NonNull Bitmap bitmap, @NonNull String filePath) throws IOException {
         File localFile = new File(filePath);
         if (!localFile.getParentFile().exists()) {
             localFile.getParentFile().mkdirs();
@@ -137,7 +139,8 @@ public class FileManager {
      * @param path 文件路径, 可以为filepath, 也可以为content
      * @return 检测后的文件路径
      */
-    public String checkFilePath(String path) {
+    @Nullable
+    public String checkFilePath(@Nullable String path) {
         if(TextUtils.isEmpty(path)) return null;
 
         if (isUriForFile(path)) {
@@ -163,6 +166,7 @@ public class FileManager {
      * 读写该目录的文件不需要权限
      * @return 返回外部Cache目录, 或者内部的Cache目录
      */
+    @NonNull
     public File getCacheDirectory() {
         File appCacheDir = null;
         if (MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) appCacheDir = context.getExternalCacheDir();
@@ -175,6 +179,7 @@ public class FileManager {
      * 读写该目录的文件不需要权限
      * @return 返回外部File目录, 或者内部的File目录
      */
+    @NonNull
     public File getFileDirectory() {
         File appFileDir = null;
         if (MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) appFileDir = context.getExternalFilesDir("exFiles");
@@ -187,7 +192,8 @@ public class FileManager {
      * @param uri content://com.android.contacts/display_photo/1
      * @return Bitmap / null
      */
-    public Bitmap uri2Bitmap(String uri) {
+    @Nullable
+    public Bitmap uri2Bitmap(@Nullable String uri) {
         if (context == null || TextUtils.isEmpty(uri)) return null;
 
         try {
@@ -225,7 +231,7 @@ public class FileManager {
      * @param folder 文件夹
      * @return 文件夹内文件的大小
      */
-    public long getFolderSize(File folder) {
+    public long getFolderSize(@Nullable File folder) {
         long size = 0;
         try {
             for (File file : folder.listFiles()) {
@@ -242,7 +248,7 @@ public class FileManager {
      * 清空文件夹
      * @param folder 文件夹
      */
-    public boolean clearFolder(File folder) {
+    public boolean clearFolder(@Nullable File folder) {
         if (folder == null && !folder.exists()) return false;
 
         if (folder.isDirectory()) {
@@ -257,6 +263,7 @@ public class FileManager {
     /**
      * 获取格式化之后的文件大小
      */
+    @NonNull
     public String getFormatSize(double size) {
         double KB = size / 1024;
         if (KB < 1) return String.format("%dB", (int) size);
@@ -294,7 +301,8 @@ public class FileManager {
      * "Folder/" -> "/Folder"
      * "/Folder/" -> "/Folder"
      */
-    public String checkFolderName(String folder) {
+    @NonNull
+    public String checkFolderName(@Nullable String folder) {
         if (folder == null) return "";
         if (TextUtils.isEmpty(folder)) return folder;
 
@@ -312,7 +320,7 @@ public class FileManager {
      * OutputStream outputStream = new FileOutputStream(file);
      * StreamIn2Out(inputStream, outputStream);
      */
-    public void streamIn2Out(InputStream is, OutputStream os) throws IOException {
+    public void streamIn2Out(@Nullable InputStream is, @Nullable OutputStream os) throws IOException {
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
         try {
@@ -333,7 +341,7 @@ public class FileManager {
         }
     }
 
-    public boolean exists(String filePath) {
+    public boolean exists(@Nullable String filePath) {
         if (TextUtils.isEmpty(filePath)) return false;
         try {
             if (isUriForFile(filePath)) return exists(Uri.parse(filePath));
@@ -343,12 +351,12 @@ public class FileManager {
         }
     }
 
-    public boolean exists(File file) {
+    public boolean exists(@Nullable File file) {
         if (file == null) return false;
         return file.exists();
     }
 
-    public boolean exists(Uri file) {
+    public boolean exists(@Nullable Uri file) {
         if (file == null) return false;
         try {
             context.getContentResolver().openInputStream(file).close();
@@ -364,7 +372,8 @@ public class FileManager {
      * @return Pair<Width, Height>
      */
     @SuppressLint("NewApi")
-    public Pair<Integer, Integer> getImageWidthHeight(String url) {
+    @NonNull
+    public Pair<Integer, Integer> getImageWidthHeight(@Nullable String url) {
         try {
             InputStream inputStream;
             ExifInterface exifInterface;
@@ -384,7 +393,9 @@ public class FileManager {
         }
     }
 
-    public Pair<Integer, Integer> getImageWidthHeight(Uri uri) {
+    @NonNull
+    public Pair<Integer, Integer> getImageWidthHeight(@Nullable Uri uri) {
+        if (uri == null) return new Pair<>(0, 0);
         return this.getImageWidthHeight(uri.toString());
     }
 
@@ -393,7 +404,8 @@ public class FileManager {
      * @param url Uri 或者 file path
      * @return Pair<Pair<Width, Height>, duration>
      */
-    public Pair<Pair<Integer, Integer>, Long> getVideoWidthHeight(String url) {
+    @NonNull
+    public Pair<Pair<Integer, Integer>, Long> getVideoWidthHeight(@Nullable String url) {
         final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
             if (isUriForFile(url)) retriever.setDataSource(context, Uri.parse(url));
@@ -419,7 +431,9 @@ public class FileManager {
         }
     }
 
-    public Pair<Pair<Integer, Integer>, Long> getVideoWidthHeight(Uri uri) {
+    @NonNull
+    public Pair<Pair<Integer, Integer>, Long> getVideoWidthHeight(@Nullable Uri uri) {
+        if (uri == null) return new Pair<>(new Pair<>(0, 0), 0L);
         return this.getVideoWidthHeight(uri.toString());
     }
 
@@ -428,7 +442,7 @@ public class FileManager {
      * @param url Uri 或者 file path
      * @return 播放时长
      */
-    public long getAudioDuration(String url) {
+    public long getAudioDuration(@Nullable String url) {
         final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
             if (isUriForFile(url)) retriever.setDataSource(context, Uri.parse(url));
@@ -442,7 +456,8 @@ public class FileManager {
         }
     }
 
-    public long getAudioDuration(Uri uri) {
+    public long getAudioDuration(@Nullable Uri uri) {
+        if (uri == null) return 0L;
         return this.getAudioDuration(uri.toString());
     }
 
@@ -451,7 +466,7 @@ public class FileManager {
      * @param url 文件路径
      * @return true 是Uri路径; false, 普通路径 或者 url为空
      */
-    public boolean isUriForFile(String url) {
+    public boolean isUriForFile(@Nullable String url) {
         if (TextUtils.isEmpty(url)) return false;
         return url.startsWith("content://");
     }

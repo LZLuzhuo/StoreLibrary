@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import java.io.InputStream;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import me.luzhuo.lib_core.app.base.CoreBaseApplication;
 import me.luzhuo.lib_file.bean.FileBean;
 import me.luzhuo.lib_file.enums.MIMETypes;
@@ -53,14 +54,14 @@ public class FileStoreManager {
     /**
      * 存储文件到 Download
      */
-    public boolean saveFile(String fileName, String folder, InputStream inputStream) {
+    public boolean saveFile(@NonNull String fileName, @NonNull String folder, @NonNull InputStream inputStream) {
         return fileStore.saveFile(context, fileName, folder, mimeTypes.getMIMEType(fileName), inputStream);
     }
 
     /**
      * 存储文件到 Picture
      */
-    public boolean saveImage(String fileName, String folder, InputStream inputStream) {
+    public boolean saveImage(@NonNull String fileName, @NonNull String folder, @NonNull InputStream inputStream) {
         String mimeType = mimeTypes.getMIMEType(fileName);
         if (TextUtils.isEmpty(mimeType)) mimeType = mimeTypes.getMIMEType(".png");
 
@@ -70,7 +71,7 @@ public class FileStoreManager {
     /**
      * 存储文件到 Movies
      */
-    public boolean saveVideo(String fileName, String folder, InputStream inputStream) {
+    public boolean saveVideo(@NonNull String fileName, @NonNull String folder, @NonNull InputStream inputStream) {
         String mimeType = mimeTypes.getMIMEType(fileName);
         if (TextUtils.isEmpty(mimeType)) mimeType = mimeTypes.getMIMEType(".mp4");
 
@@ -80,7 +81,7 @@ public class FileStoreManager {
     /**
      * 存储文件到 Music
      */
-    public boolean saveAudio(String fileName, String folder, InputStream inputStream) {
+    public boolean saveAudio(@NonNull String fileName, @NonNull String folder, @NonNull InputStream inputStream) {
         String mimeType = mimeTypes.getMIMEType(fileName);
         if (TextUtils.isEmpty(mimeType)) mimeType = mimeTypes.getMIMEType(".mp3");
 
@@ -92,6 +93,7 @@ public class FileStoreManager {
      * @param type 文件类型 {@link FileStore.TypeImage}
      * @return
      */
+    @NonNull
     public List<FileBean> queryList(int type) {
         return fileStore.queryList(context, type);
     }
