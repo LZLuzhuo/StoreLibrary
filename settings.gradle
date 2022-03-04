@@ -1,0 +1,4 @@
+include ':app'
+rootProject.name = "StoreDemo"
+include ':lib_file'
+include ':lib_picture_select'
