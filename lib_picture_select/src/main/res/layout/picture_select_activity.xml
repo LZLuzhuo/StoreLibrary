@@ -4,7 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/picture_select_layout_header_bar" />
+    <me.luzhuo.lib_picture_select.ui.PictureSelectHeaderBar
+        android:id="@+id/picture_select_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/picture_select_rec"
@@ -16,6 +19,9 @@
         android:overScrollMode="never"
         android:background="@color/picture_select_center" />
 
-    <include layout="@layout/picture_select_layout_bottom_bar" />
+    <me.luzhuo.lib_picture_select.ui.PictureSelectBottomBar
+        android:id="@+id/picture_select_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="me.luzhuo.lib_picture_select">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application>
         <activity android:name=".PictureSelectActivity" android:configChanges="orientation|keyboardHidden|screenSize" android:theme="@style/Picture_select_Theme"/>
     </application>

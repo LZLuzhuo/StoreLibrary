@@ -104,13 +104,13 @@ public class ScopedStore implements FileStore {
     }
 
     @Override
-    public List<FileBean> queryList(Context context, int type) {
+    public List<FileBean> queryList(Context context, @TypeFileStore int type) {
         // 选择条件
         String selection = getSelection(type);
         return queryList(context, selection);
     }
 
-    public static String getSelection(int type) {
+    public static String getSelection(@TypeFileStore int type) {
         // 非Gif文件
         String noGif = "mime_type!='image/gif'";
         String isGif = "mime_type='image/gif'";

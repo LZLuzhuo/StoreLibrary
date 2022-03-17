@@ -23,7 +23,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -105,13 +104,13 @@ public class DefaultFileStore implements FileStore {
     }
 
     @Override
-    public List<FileBean> queryList(Context context, int type) {
+    public List<FileBean> queryList(Context context, @TypeFileStore int type) {
         String selection = getSelection(type);
         return queryList(context, selection);
     }
 
     @SuppressLint("NewApi")
-    public static String getSelection(int type) {
+    public static String getSelection(@TypeFileStore int type) {
         return ScopedStore.getSelection(type);
     }
 

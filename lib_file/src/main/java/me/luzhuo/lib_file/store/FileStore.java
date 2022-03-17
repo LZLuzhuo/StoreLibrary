@@ -17,8 +17,11 @@ package me.luzhuo.lib_file.store;
 import android.content.Context;
 
 import java.io.InputStream;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
+import androidx.annotation.IntDef;
 import me.luzhuo.lib_file.bean.FileBean;
 
 /**
@@ -65,10 +68,14 @@ public interface FileStore {
     public final int TypeVideo =       1 << 3;
     public final int TypeAudio =       1 << 4;
 
+    @IntDef(flag = true, value = {TypeImage, TypeGif, TypeVideo, TypeAudio})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TypeFileStore {}
+
     /**
      * 根据type检索文件
      * @param type 类型
      */
-    public List<FileBean> queryList(Context context, int type);
+    public List<FileBean> queryList(Context context, @TypeFileStore int type);
 
 }

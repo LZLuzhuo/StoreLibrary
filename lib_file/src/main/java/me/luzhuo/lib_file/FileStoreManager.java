@@ -90,11 +90,11 @@ public class FileStoreManager {
 
     /**
      * 根据文件类型, 获取文件列表
-     * @param type 文件类型 {@link FileStore.TypeImage}
+     * @param type 文件类型 {@link FileStore.TypeFileStore}
      * @return
      */
     @NonNull
-    public List<FileBean> queryList(int type) {
+    public List<FileBean> queryList(@FileStore.TypeFileStore int type) {
         return fileStore.queryList(context, type);
     }
 

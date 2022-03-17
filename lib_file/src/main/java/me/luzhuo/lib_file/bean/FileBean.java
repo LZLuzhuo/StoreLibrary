@@ -15,6 +15,10 @@
 package me.luzhuo.lib_file.bean;
 
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 
 import androidx.annotation.NonNull;
 
@@ -24,7 +28,7 @@ import androidx.annotation.NonNull;
  * @Creation Date: 2021/11/13 11:39
  * @Copyright: Copyright 2021 Luzhuo. All rights reserved.
  **/
-public class FileBean extends CheckableFileBean {
+public class FileBean extends CheckableFileBean implements Parcelable, Serializable {
 
     /**
      * 数据库的文件id
@@ -101,6 +105,49 @@ public class FileBean extends CheckableFileBean {
                 ", bucketName='" + bucketName + '\'' +
                 ", size=" + size +
                 ", addedDate=" + addedDate +
+                ", isChecked=" + isChecked +
                 '}';
+    }
+
+    public static final Creator<FileBean> CREATOR = new Creator<FileBean>() {
+        @Override
+        public FileBean createFromParcel(Parcel source) {
+            return new FileBean(source);
+        }
+
+        @Override
+        public FileBean[] newArray(int size) {
+            return new FileBean[size];
+        }
+    };
+
+    protected FileBean(Parcel in) {
+        id = in.readLong();
+        fileName = in.readString();
+        mimeType = in.readString();
+        uriPath = Uri.parse(in.readString());
+        urlPath = in.readString();
+        bucketId = in.readLong();
+        bucketName = in.readString();
+        size = in.readLong();
+        addedDate = in.readLong();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(fileName);
+        dest.writeString(mimeType);
+        dest.writeString(uriPath.toString());
+        dest.writeString(urlPath);
+        dest.writeLong(bucketId);
+        dest.writeString(bucketName);
+        dest.writeLong(size);
+        dest.writeLong(addedDate);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 }

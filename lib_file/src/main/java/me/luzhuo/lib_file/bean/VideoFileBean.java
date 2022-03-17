@@ -15,11 +15,12 @@
 package me.luzhuo.lib_file.bean;
 
 import android.net.Uri;
-
-import androidx.annotation.Nullable;
+import android.os.Parcel;
 
 /**
  * Description: 视频文件类型
+ * 注意:
+ * 1. 系统数据库未提供视频封面数据
  * @Author: Luzhuo
  * @Creation Date: 2021/11/13 11:40
  * @Copyright: Copyright 2021 Luzhuo. All rights reserved.
@@ -39,13 +40,6 @@ public class VideoFileBean extends FileBean {
      * 视频的时长
      */
     public int duration;
-
-    /**
-     * 视频Url封面, 300 * 300
-     * 视频生成封面比较耗时, 系统数据库并未提供封面, 所有由后续添加
-     */
-    @Nullable
-    public String coverUrlPath;
 
     public VideoFileBean(long id, String fileName, String mimeType, Uri uriPath, String urlPath, long bucketId, String bucketName, long size, long addedDate, int width, int height, int duration) {
         super(id, fileName, mimeType, uriPath, urlPath, bucketId, bucketName, size, addedDate);
@@ -69,6 +63,34 @@ public class VideoFileBean extends FileBean {
                 ", bucketName='" + bucketName + '\'' +
                 ", size=" + size +
                 ", addedDate=" + addedDate +
+                ", isChecked=" + isChecked +
                 '}';
+    }
+
+    public static final Creator<VideoFileBean> CREATOR = new Creator<VideoFileBean>() {
+        @Override
+        public VideoFileBean createFromParcel(Parcel source) {
+            return new VideoFileBean(source);
+        }
+
+        @Override
+        public VideoFileBean[] newArray(int size) {
+            return new VideoFileBean[size];
+        }
+    };
+
+    protected VideoFileBean(Parcel in) {
+        super(in);
+        width = in.readInt();
+        height = in.readInt();
+        duration = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeInt(width);
+        dest.writeInt(height);
+        dest.writeInt(duration);
     }
 }

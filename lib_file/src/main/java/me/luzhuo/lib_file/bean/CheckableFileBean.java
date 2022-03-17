@@ -14,13 +14,17 @@
  */
 package me.luzhuo.lib_file.bean;
 
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
 /**
  * Description: 可选中的文件
  * @Author: Luzhuo
  * @Creation Date: 2021/11/13 11:39
  * @Copyright: Copyright 2021 Luzhuo. All rights reserved.
  **/
-public class CheckableFileBean {
+public abstract class CheckableFileBean {
 
     /**
      * 是否被选中

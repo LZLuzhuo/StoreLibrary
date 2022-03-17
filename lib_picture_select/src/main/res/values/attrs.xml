@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PictureSelectView">
+        <attr name="picture_flags" format="flags">
+            <flag name="Images" value="2"/>
+            <flag name="Gif" value="4"/>
+            <flag name="Videos" value="8"/>
+            <flag name="Audio" value="16"/>
+        </attr>
+        <attr name="picture_only_show" format="boolean"/>
+        <attr name="picture_span_count" format="integer"/>
+        <attr name="picture_is_original" format="boolean"/>
+        <attr name="picture_show_camera" format="boolean"/>
+        <attr name="picture_max_count" format="integer"/>
+        <attr name="picture_layout_show" format="reference"/>
+        <attr name="picture_layout_select_add" format="reference"/>
+        <attr name="picture_layout_select_normal" format="reference"/>
+        <!-- 是否执行自身的选择操作, 默认为true; 若为false, 用户选择图片后不会自动添加到列表, 需要手动操作 -->
+        <attr name="picture_action_select" format="boolean"/>
+        <attr name="picture_action_delete" format="boolean"/>
+        <attr name="picture_action_show" format="boolean"/>
+    </declare-styleable>
+</resources>

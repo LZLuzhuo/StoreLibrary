@@ -15,6 +15,7 @@
 package me.luzhuo.lib_file.bean;
 
 import android.net.Uri;
+import android.os.Parcel;
 
 /**
  * Description: 图片文件类型
@@ -54,6 +55,32 @@ public class ImageFileBean extends FileBean {
                 ", bucketName='" + bucketName + '\'' +
                 ", size=" + size +
                 ", addedDate=" + addedDate +
+                ", isChecked=" + isChecked +
                 '}';
+    }
+
+    public static final Creator<ImageFileBean> CREATOR = new Creator<ImageFileBean>() {
+        @Override
+        public ImageFileBean createFromParcel(Parcel source) {
+            return new ImageFileBean(source);
+        }
+
+        @Override
+        public ImageFileBean[] newArray(int size) {
+            return new ImageFileBean[size];
+        }
+    };
+
+    protected ImageFileBean(Parcel in) {
+        super(in);
+        width = in.readInt();
+        height = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeInt(width);
+        dest.writeInt(height);
     }
 }

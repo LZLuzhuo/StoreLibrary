@@ -16,8 +16,6 @@ import androidx.core.graphics.BlendModeColorFilterCompat;
 import androidx.core.graphics.BlendModeCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -32,8 +30,9 @@ import me.luzhuo.lib_file.bean.ImageFileBean;
 import me.luzhuo.lib_file.bean.VideoFileBean;
 import me.luzhuo.lib_file.enums.FileType;
 import me.luzhuo.lib_file.store.FileStore;
-import me.luzhuo.lib_picture_select.PictureSelectListener;
 import me.luzhuo.lib_picture_select.R;
+import me.luzhuo.lib_picture_select.engine.GlideImageEngine;
+import me.luzhuo.lib_picture_select.engine.ImageEngine;
 
 public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<FileBean> mDatas = new ArrayList<>();
@@ -44,7 +43,8 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
     private boolean isSingleReturn;
     private Context context;
     private FileManager fileManager;
-    private PictureSelectListener listener;
+    private PictureSelectAdapterListener listener;
+    private ImageEngine imageEngine = GlideImageEngine.getInstance();
 
     public PictureSelectAdapter(int fileType) {
         this(fileType, Integer.MAX_VALUE, false);
@@ -145,17 +145,17 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
 
         public void bindData(FileBean data) {
-            // TODO 占位图标需要继续设计
             if (FileType.getFileType(data.mimeType) == FileType.Image) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) Glide.with(context).load(data.uriPath).placeholder(R.mipmap.picture_select_icon_image).into(picture_select_pic);
-                else Glide.with(context).load(data.urlPath).placeholder(R.mipmap.picture_select_icon_image).into(picture_select_pic);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) imageEngine.loadGridImage(context, data.uriPath, picture_select_pic);
+                else imageEngine.loadGridImage(context, data.urlPath, picture_select_pic);
             } else if (FileType.getFileType(data.mimeType) == FileType.Video) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) Glide.with(context).load(data.uriPath).placeholder(R.mipmap.picture_select_icon_video).into(picture_select_pic);
-                else Glide.with(context).load(data.urlPath).placeholder(R.mipmap.picture_select_icon_video).into(picture_select_pic);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) imageEngine.loadGridVideoCover(context, data.uriPath, picture_select_pic);
+                else imageEngine.loadGridImage(context, data.urlPath, picture_select_pic);
             } else if (FileType.getFileType(data.mimeType) == FileType.Audio) {
-                Glide.with(context).load(R.mipmap.picture_select_icon_audio).into(picture_select_pic);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) imageEngine.loadGridAudio(context, data.uriPath, picture_select_pic);
+                else imageEngine.loadGridAudio(context, data.urlPath, picture_select_pic);
             } else { // 文档
-                Glide.with(context).load(R.mipmap.picture_select_icon_document).into(picture_select_pic);
+                imageEngine.loadGridOther(context, R.mipmap.picture_select_icon_document, picture_select_pic);
             }
 
             if (isSingleReturn) {
@@ -348,7 +348,7 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
         return selectCount;
     }
 
-    public void setPictureSelectListener(PictureSelectListener listener) {
+    public void setPictureSelectListener(PictureSelectAdapterListener listener) {
         this.listener = listener;
     }
 }

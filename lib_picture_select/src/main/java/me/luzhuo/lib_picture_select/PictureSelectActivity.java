@@ -1,51 +1,91 @@
 package me.luzhuo.lib_picture_select;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.util.Pair;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import me.luzhuo.lib_core.app.base.CoreBaseActivity;
+import me.luzhuo.lib_core.media.audio.AudioManager;
+import me.luzhuo.lib_core.media.audio.IAudioCallback;
 import me.luzhuo.lib_core.media.camera.CameraManager;
 import me.luzhuo.lib_core.media.camera.ICameraCallback;
+import me.luzhuo.lib_core.media.video.IVideoRecorderCallback;
+import me.luzhuo.lib_core.media.video.VideoRecorderManager;
 import me.luzhuo.lib_core.ui.dialog.Dialog;
 import me.luzhuo.lib_file.FileManager;
 import me.luzhuo.lib_file.FileStoreManager;
 import me.luzhuo.lib_file.bean.FileBean;
 import me.luzhuo.lib_file.bean.ImageFileBean;
 import me.luzhuo.lib_file.store.FileStore;
+import me.luzhuo.lib_file.store.FileStore.TypeFileStore;
 import me.luzhuo.lib_permission.Permission;
 import me.luzhuo.lib_permission.PermissionCallback;
 import me.luzhuo.lib_picture_select.adapter.PictureSelectAdapter;
+import me.luzhuo.lib_picture_select.adapter.PictureSelectAdapterListener;
+import me.luzhuo.lib_picture_select.ui.PictureSelectBottomBar;
+import me.luzhuo.lib_picture_select.ui.PictureSelectHeaderBar;
 
 import static me.luzhuo.lib_file.store.FileStore.TypeImage;
 
 /**
  * 图片选择的Activity界面
  */
-public class PictureSelectActivity extends CoreBaseActivity implements PictureSelectListener, ICameraCallback {
+public class PictureSelectActivity extends CoreBaseActivity implements PictureSelectAdapterListener, ICameraCallback, IVideoRecorderCallback, IAudioCallback, PictureSelectHeaderBar.PictureSelectHeaderListener {
+    private static final String TAG = PictureSelectActivity.class.getSimpleName();
     private RecyclerView picture_select_rec;
-    private PictureSelectAdapter adapter;
+    private PictureSelectHeaderBar picture_select_header;
+    private PictureSelectBottomBar picture_select_bottom;
+
     private int fileType;
     private int maxCount;
+    private boolean isShowCamera;
+
+    private PictureSelectAdapter adapter;
     private List<FileBean> lists;
     private CameraManager camera;
-    private FileManager fileManager = new FileManager();
+    private VideoRecorderManager recorder;
+    private AudioManager audio;
+    private final FileManager fileManager = new FileManager();
+    private final FileStoreManager fileStoreManager = new FileStoreManager();
 
-    public static void start(Context context, int fileType, int maxCount) {
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private final static Handler mainThread = new Handler(Looper.getMainLooper());
+    @Nullable
+    private static PictureSelectListener listener;
+
+    public static void start(Context context, ActivityResultLauncher<Intent> startActivity, @TypeFileStore int fileType, int maxCount, boolean isShowCamera) {
         Intent intent = new Intent(context, PictureSelectActivity.class);
         intent.putExtra("fileType", fileType);
         intent.putExtra("maxCount", maxCount);
+        intent.putExtra("isShowCamera", isShowCamera);
+        startActivity.launch(intent);
+    }
+
+    public static void start(Context context, PictureSelectListener listener, @TypeFileStore int fileType, int maxCount, boolean isShowCamera) {
+        PictureSelectActivity.listener = listener;
+        Intent intent = new Intent(context, PictureSelectActivity.class);
+        intent.putExtra("fileType", fileType);
+        intent.putExtra("maxCount", maxCount);
+        intent.putExtra("isShowCamera", isShowCamera);
         context.startActivity(intent);
     }
 
@@ -55,10 +95,19 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
         setContentView(R.layout.picture_select_activity);
         fileType = getIntent().getIntExtra("fileType", TypeImage);
         maxCount = getIntent().getIntExtra("maxCount", 0);
+        isShowCamera = getIntent().getBooleanExtra("isShowCamera", false);
 
         picture_select_rec = findViewById(R.id.picture_select_rec);
+        picture_select_header = findViewById(R.id.picture_select_header);
+        picture_select_bottom = findViewById(R.id.picture_select_bottom);
+
         camera = new CameraManager(this);
         camera.setCameraCallback(this);
+        recorder = new VideoRecorderManager(this);
+        recorder.setVideoRecorderCallback(this);
+        audio = new AudioManager(this);
+        audio.setAudioCallback(this);
+        picture_select_header.setOnPictureSelectHeaderListener(this);
 
         initView();
         initData();
@@ -66,7 +115,7 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
 
     private void initView() {
         picture_select_rec.setLayoutManager(new GridLayoutManager(this, 4));
-        adapter = new PictureSelectAdapter(fileType, maxCount, true);
+        adapter = new PictureSelectAdapter(fileType, maxCount, isShowCamera);
         picture_select_rec.setAdapter(adapter);
         adapter.setPictureSelectListener(this);
     }
@@ -84,8 +133,18 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
      * 获取媒体数据
      */
     private void getMediaData() {
-        this.lists = new FileStoreManager().queryList(fileType);
-        adapter.setData(this.lists);
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                lists = fileStoreManager.queryList(fileType);
+                mainThread.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.setData(lists);
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -103,37 +162,52 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
 
         if (fileType == FileStore.TypeImage || fileType == FileStore.TypeGif || fileType == FileStore.TypeImage + FileStore.TypeGif) {
             Permission.request(this, new PermissionCallback() {
+                @SuppressLint("MissingPermission")
                 @Override
                 public void onGranted() {
                     camera.show();
                 }
             }, Manifest.permission.CAMERA);
         } else if (fileType == FileStore.TypeVideo) {
-            // TODO 录像
-//            picture_select_camera_text.setImageResource(R.mipmap.picture_select_text_record_video);
+            Permission.request(this, new PermissionCallback() {
+                @SuppressLint("MissingPermission")
+                @Override
+                public void onGranted() {
+                    recorder.show();
+                }
+            }, Manifest.permission.CAMERA);
         } else if (fileType == FileStore.TypeAudio) {
-            // TODO 录音
-//            picture_select_camera_text.setImageResource(R.mipmap.picture_select_text_record_audio);
+            audio.show();
         } else {
-            // TODO 拍照或录像
-//            picture_select_camera_text.setImageResource(R.mipmap.picture_select_text_record_image_or_video);
+            Permission.request(this, new PermissionCallback() {
+                @SuppressLint("MissingPermission")
+                @Override
+                public void onGranted() {
+                    camera.show();
+                }
+            }, Manifest.permission.CAMERA);
         }
     }
 
     @Override
     public void onSelect(boolean isSingle, FileBean file) {
+        if (isSingle) {
+            ArrayList<FileBean> selectedFiles = new ArrayList<>();
+            selectedFiles.add(file);
+            selectComplete(selectedFiles);
+        } else {
+            picture_select_header.setCompleteButton(file.isChecked, maxCount);
+        }
         Log.e(TAG, "选中的文件: " + isSingle + " : " + file);
     }
 
     @Override
     public void onShow(FileBean file, int index, List<FileBean> files) {
-        Log.e(TAG, "显示的文件: " + file + " : " + index + " : " + files);
+        Log.e(TAG, "显示的文件: " + index + " : " + files + " : " + file);
     }
 
-    private static final String TAG = PictureSelectActivity.class.getSimpleName();
-
     @Override
-    public void onCameraCallback(String s) {
+    public void onCameraCallback(@NonNull String s) {
         File file = new File(s);
         Pair<Integer, Integer> size = fileManager.getImageWidthHeight(s);
         ImageFileBean fileBean = new ImageFileBean(0, file.getName(), "image/jpeg", Uri.fromFile(file), file.getAbsolutePath(), -1, "Camera", file.length(), System.currentTimeMillis() / 1000, size.first, size.second);
@@ -143,5 +217,41 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
         Log.e(TAG, "" + fileBean);
         adapter.setData(this.lists);
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onVideoRecorderCallback(@NonNull Uri uri, @NonNull File file) {
+
+    }
+
+    @Override
+    public void onAudioCallback(@NonNull Uri uri) {
+
+    }
+
+    @Override
+    public void onCompleteButton() {
+        ArrayList<FileBean> selectedFiles = new ArrayList<>();
+        for (FileBean fileBean : lists) {
+            if (fileBean.isChecked) selectedFiles.add(fileBean);
+        }
+        selectComplete(selectedFiles);
+    }
+
+    private void selectComplete(ArrayList<FileBean> selectFiles) {
+        if (listener == null) {
+            Intent intent = new Intent();
+            intent.putParcelableArrayListExtra("result", selectFiles);
+            setResult(RESULT_OK, intent);
+        } else {
+            listener.onPictureSelect(selectFiles);
+        }
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        listener = null;
+        super.onDestroy();
     }
 }

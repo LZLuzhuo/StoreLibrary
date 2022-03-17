@@ -24,8 +24,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -42,6 +47,7 @@ import me.luzhuo.lib_file.store.ScopedStore;
 import me.luzhuo.lib_permission.Permission;
 import me.luzhuo.lib_permission.PermissionCallback;
 import me.luzhuo.lib_picture_select.PictureSelectActivity;
+import me.luzhuo.lib_picture_select.PictureSelectListener;
 
 import static me.luzhuo.lib_file.store.FileStore.TypeAudio;
 import static me.luzhuo.lib_file.store.FileStore.TypeGif;
@@ -76,8 +82,19 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }*/
 
-//        startActivity(new Intent(this, PictureSelectActivity.class));
+        PictureSelectActivity.start(this, startActivity, TypeImage | TypeVideo | TypeAudio | TypeGif, 9, true);
     }
+
+    final ActivityResultLauncher<Intent> startActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult it) {
+            if (it.getResultCode() == RESULT_OK) {
+                if (it.getData() == null) return;
+                final ArrayList<FileBean> result = it.getData().getParcelableArrayListExtra("result");
+                Log.e(TAG, "" + result);
+            }
+        }
+    });
 
     public void createFolder(View view) {
         final String path = Environment.DIRECTORY_DOWNLOADS + "/David";
@@ -95,17 +112,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void createFile(View view) throws IOException {
+        PictureSelectActivity.start(this, new PictureSelectListener() {
+            @Override
+            public void onPictureSelect(List<FileBean> selectFiles) {
+                Log.e(TAG, "" + selectFiles);
+            }
+        }, TypeImage | TypeVideo | TypeAudio | TypeGif, 9, true);
 
 //        InputStream inputStream = getAssets().open("music.flac");
 //        boolean b = new FileStoreManager(this).saveFile("music.flac", "", inputStream);
 //        Log.e(TAG, "" + b);
 
-        // TODO lib_file 的使用
-        List<FileBean> lists = new FileStoreManager().queryList(TypeVideo | TypeAudio | TypeImage | TypeGif);
-        for (FileBean list : lists) {
-            Log.e(TAG, "" + list);
-            if (list.fileName.startsWith("Screenshot_20210901_175518")) Log.e(TAG, "" + new FileManager().exists(this, list.uriPath));
-        }
+        // lib_file 的使用
+//        List<FileBean> lists = new FileStoreManager().queryList(TypeVideo | TypeAudio | TypeImage | TypeGif);
+//        for (FileBean list : lists) {
+//            Log.e(TAG, "" + list);
+//            if (list.fileName.startsWith("Screenshot_20210901_175518")) Log.e(TAG, "" + new FileManager().exists(list.uriPath));
+//        }
 //        Log.e(TAG, "" + lists);
         // Log.e(TAG, "" + lists.size());
 

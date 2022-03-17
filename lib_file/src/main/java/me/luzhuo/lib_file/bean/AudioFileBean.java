@@ -15,6 +15,7 @@
 package me.luzhuo.lib_file.bean;
 
 import android.net.Uri;
+import android.os.Parcel;
 
 /**
  * Description: 音频文件
@@ -47,6 +48,30 @@ public class AudioFileBean extends FileBean {
                 ", bucketName='" + bucketName + '\'' +
                 ", size=" + size +
                 ", addedDate=" + addedDate +
+                ", isChecked=" + isChecked +
                 '}';
+    }
+
+    public static final Creator<AudioFileBean> CREATOR = new Creator<AudioFileBean>() {
+        @Override
+        public AudioFileBean createFromParcel(Parcel source) {
+            return new AudioFileBean(source);
+        }
+
+        @Override
+        public AudioFileBean[] newArray(int size) {
+            return new AudioFileBean[size];
+        }
+    };
+
+    protected AudioFileBean(Parcel in) {
+        super(in);
+        duration = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeInt(duration);
     }
 }
