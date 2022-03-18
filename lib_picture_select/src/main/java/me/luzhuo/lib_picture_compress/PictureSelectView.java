@@ -26,6 +26,9 @@ import me.luzhuo.lib_picture_select_view.PictureSelectOriginView;
 import me.luzhuo.lib_picture_select_view.adapter.PictureViewSelectAdapter;
 import me.luzhuo.lib_picture_select_view.adapter.PictureViewShowAdapter;
 
+/**
+ * 相册选择 (具有压缩功能)
+ */
 public class PictureSelectView extends PictureSelectOriginView {
     private static final String TAG = PictureSelectView.class.getSimpleName();
     private final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());

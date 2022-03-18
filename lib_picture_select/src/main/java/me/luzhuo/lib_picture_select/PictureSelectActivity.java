@@ -12,6 +12,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -19,7 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,6 +44,7 @@ import me.luzhuo.lib_permission.Permission;
 import me.luzhuo.lib_permission.PermissionCallback;
 import me.luzhuo.lib_picture_select.adapter.PictureSelectAdapter;
 import me.luzhuo.lib_picture_select.adapter.PictureSelectAdapterListener;
+import me.luzhuo.lib_picture_select.bean.PictureGroup;
 import me.luzhuo.lib_picture_select.ui.PictureSelectBottomBar;
 import me.luzhuo.lib_picture_select.ui.PictureSelectHeaderBar;
 
@@ -143,6 +147,9 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
                         adapter.setData(lists);
                     }
                 });
+
+                // 分组
+                picture_select_header.setPictureBucket(lists);
             }
         });
     }
@@ -236,6 +243,11 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
             if (fileBean.isChecked) selectedFiles.add(fileBean);
         }
         selectComplete(selectedFiles);
+    }
+
+    @Override
+    public void onSwitchBucket(@Nullable List<FileBean> files) {
+        adapter.setData(files);
     }
 
     private void selectComplete(ArrayList<FileBean> selectFiles) {

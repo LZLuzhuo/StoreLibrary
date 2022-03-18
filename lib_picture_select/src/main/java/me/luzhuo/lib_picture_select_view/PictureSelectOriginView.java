@@ -30,6 +30,9 @@ import me.luzhuo.lib_picture_select_view.bean.VideoNetBean;
 import me.luzhuo.lib_picture_select_view.callback.PictureViewSelectCallback;
 import me.luzhuo.lib_picture_select_view.callback.PictureViewShowCallback;
 
+/**
+ * 相册选择 (没有压缩功能)
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class PictureSelectOriginView extends RecyclerView implements OnPictureAdapterSelectListener {
 
@@ -87,6 +90,7 @@ public class PictureSelectOriginView extends RecyclerView implements OnPictureAd
     }
 
     protected void initView() {
+        this.setOverScrollMode(OVER_SCROLL_NEVER);
         adapter = getSelectAdapter();
         this.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
         this.setAdapter(adapter);

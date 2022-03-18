@@ -12,6 +12,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
 import androidx.core.graphics.BlendModeColorFilterCompat;
 import androidx.core.graphics.BlendModeCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,6 +47,7 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
     private FileManager fileManager;
     private PictureSelectAdapterListener listener;
     private ImageEngine imageEngine = GlideImageEngine.getInstance();
+    private int selectCount = 0;
 
     public PictureSelectAdapter(int fileType) {
         this(fileType, Integer.MAX_VALUE, false);
@@ -57,10 +60,11 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.fileManager = new FileManager();
     }
 
-    public void setData(List<FileBean> datas) {
+    @MainThread
+    public void setData(@Nullable List<FileBean> datas) {
         this.mDatas.clear();
-        this.mDatas.addAll(datas);
-        notifyDataSetChanged();
+        if (datas != null) this.mDatas.addAll(datas);
+        this.notifyDataSetChanged();
     }
 
     @Override
@@ -145,13 +149,13 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
 
         public void bindData(FileBean data) {
-            if (FileType.getFileType(data.mimeType) == FileType.Image) {
+            if (data instanceof ImageFileBean) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) imageEngine.loadGridImage(context, data.uriPath, picture_select_pic);
                 else imageEngine.loadGridImage(context, data.urlPath, picture_select_pic);
-            } else if (FileType.getFileType(data.mimeType) == FileType.Video) {
+            } else if (data instanceof VideoFileBean) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) imageEngine.loadGridVideoCover(context, data.uriPath, picture_select_pic);
                 else imageEngine.loadGridImage(context, data.urlPath, picture_select_pic);
-            } else if (FileType.getFileType(data.mimeType) == FileType.Audio) {
+            } else if (data instanceof AudioFileBean) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) imageEngine.loadGridAudio(context, data.uriPath, picture_select_pic);
                 else imageEngine.loadGridAudio(context, data.urlPath, picture_select_pic);
             } else { // 文档
@@ -180,9 +184,9 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
             }
 
             // video + audio
-            if (FileType.getFileType(data.mimeType) == FileType.Video || FileType.getFileType(data.mimeType) == FileType.Audio) {
+            if (data instanceof VideoFileBean || data instanceof AudioFileBean) {
                 picture_select_duration.setVisibility(View.VISIBLE);
-                if (FileType.getFileType(data.mimeType) == FileType.Video) {
+                if (data instanceof VideoFileBean) {
                     long duration = ((VideoFileBean) data).duration;
                     String durationFormat = String.format(Locale.getDefault(), "%02d:%02d", TimeUnit.MILLISECONDS.toMinutes(duration), TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));
                     picture_select_duration.setText(durationFormat);

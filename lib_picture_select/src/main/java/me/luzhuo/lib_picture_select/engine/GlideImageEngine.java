@@ -33,12 +33,12 @@ public class GlideImageEngine implements ImageEngine {
 
     @Override
     public void loadGridVideoCover(@NonNull Context context, @NonNull String url, @NonNull ImageView imageView) {
-        Glide.with(context).load(url).override(300, 300).centerCrop().placeholder(R.mipmap.picture_select_icon_video).into(imageView);
+        Glide.with(context).asBitmap().load(url).override(300, 300).centerCrop().placeholder(R.mipmap.picture_select_icon_video).into(imageView);
     }
 
     @Override
     public void loadGridVideoCover(@NonNull Context context, @NonNull Uri uri, @NonNull ImageView imageView) {
-        Glide.with(context).load(uri).override(300, 300).centerCrop().placeholder(R.mipmap.picture_select_icon_video).into(imageView);
+        Glide.with(context).asBitmap().load(uri).override(300, 300).centerCrop().placeholder(R.mipmap.picture_select_icon_video).into(imageView);
     }
 
     @Override

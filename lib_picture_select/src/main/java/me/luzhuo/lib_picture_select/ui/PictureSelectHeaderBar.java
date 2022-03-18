@@ -7,15 +7,28 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
+import androidx.fragment.app.FragmentActivity;
 import me.luzhuo.lib_core.app.color.ColorManager;
+import me.luzhuo.lib_file.bean.FileBean;
 import me.luzhuo.lib_picture_select.R;
+import me.luzhuo.lib_picture_select.adapter.HeaderBucketPopAdapter;
+import me.luzhuo.lib_picture_select.bean.PictureGroup;
 
 /**
  * 相册选择的头部
  */
-public class PictureSelectHeaderBar extends RelativeLayout implements View.OnClickListener {
+public class PictureSelectHeaderBar extends RelativeLayout implements View.OnClickListener, HeaderBucketPopAdapter.OnBucketPopCallback {
     private TextView picture_select_complete;
+    private View bucket_select;
     private final ColorManager color = new ColorManager();
     @Nullable
     private PictureSelectHeaderListener listener;
@@ -24,6 +37,20 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
      */
     private int selectCount = 0;
     private int maxCount = 0;
+
+    /**
+     * 相册组
+     * <相册id, 文件组>
+     */
+    public final Map<Long, PictureGroup> pictureBucket = new LinkedHashMap<>();
+    /**
+     * 默认为"所有相册", 且相册id为0
+     */
+    public final static long DefaultBucketId = 0L;
+    public final static String DefaultBucketName = "所有相册";
+    public long currentBucketId = DefaultBucketId;
+
+    private HeaderBucketPopWindow bucketPop;
 
     public PictureSelectHeaderBar(Context context) {
         super(context);
@@ -40,8 +67,14 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
     {
         LayoutInflater.from(getContext()).inflate(R.layout.picture_select_layout_header_bar, this, true);
         picture_select_complete = findViewById(R.id.picture_select_complete);
+        bucket_select = findViewById(R.id.bucket_select);
 
         picture_select_complete.setOnClickListener(this);
+        bucket_select.setOnClickListener(this);
+
+        bucketPop = new HeaderBucketPopWindow(getContext());
+        bucketPop.setAnchorView(this);
+        bucketPop.setOnBucketPopCallback(this);
 
         completeButtonStyle();
     }
@@ -50,7 +83,7 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
         if (selectCount > 0) {
             picture_select_complete.setBackgroundResource(R.drawable.picture_select_bg_complete);
             picture_select_complete.setTextColor(color.getColor(R.color.picture_select_complete_text));
-            picture_select_complete.setText(String.format("完成(%d/%d)", selectCount, maxCount));
+            picture_select_complete.setText(String.format(Locale.CHINESE, "完成(%d/%d)", selectCount, maxCount));
         } else {
             picture_select_complete.setBackgroundResource(R.drawable.picture_select_bg_complete_default);
             picture_select_complete.setTextColor(color.getColor(R.color.picture_select_complete_text_default));
@@ -62,6 +95,9 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
     public void onClick(View v) {
         if (v == picture_select_complete) {
             if (selectCount > 0 && listener != null) listener.onCompleteButton();
+        } else if (v == bucket_select) {
+            bucketPop.setDatas(pictureBucket);
+            bucketPop.show(currentBucketId);
         }
     }
 
@@ -76,15 +112,57 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
         completeButtonStyle();
     }
 
+    @Override
+    public void onBucketSelect(long bucket) {
+        updateBucket(bucket);
+    }
+
     public interface PictureSelectHeaderListener {
         /**
          * 用户点击了发送按钮
          * 仅在有选中图片的时候才回调
          */
         public void onCompleteButton();
+
+        /**
+         * 切换相册组
+         * @param files 如果切换到相册组没有数据, 则返回null
+         */
+        public void onSwitchBucket(@Nullable List<FileBean> files);
     }
 
     public void setOnPictureSelectHeaderListener(@Nullable PictureSelectHeaderListener listener) {
         this.listener = listener;
+    }
+
+    /**
+     * 设置相册分组
+     */
+    @WorkerThread
+    public void setPictureBucket(List<FileBean> files) {
+        // 所有相册
+        this.pictureBucket.put(DefaultBucketId, new PictureGroup(DefaultBucketId, DefaultBucketName).setFiles(files));
+        // 详细相册
+        for (FileBean fileBean : files) {
+            PictureGroup pictureGroup = this.pictureBucket.get(fileBean.bucketId);
+            if (pictureGroup == null) {
+                pictureGroup = new PictureGroup(fileBean.bucketId, fileBean.bucketName);
+                this.pictureBucket.put(fileBean.bucketId, pictureGroup);
+            }
+            pictureGroup.addFile(fileBean);
+        }
+    }
+
+    /**
+     * 更新相册分组数据
+     */
+    @MainThread
+    private void updateBucket(long bucketId) {
+        this.currentBucketId = bucketId;
+        PictureGroup pictureGroup = pictureBucket.get(currentBucketId);
+        if (listener != null) {
+            if (pictureGroup != null) listener.onSwitchBucket(pictureGroup.files);
+            else listener.onSwitchBucket(null);
+        }
     }
 }
