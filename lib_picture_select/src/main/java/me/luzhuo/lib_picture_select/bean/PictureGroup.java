@@ -40,6 +40,11 @@ public class PictureGroup {
         return this;
     }
 
+    public PictureGroup addFile(int index, FileBean fIleBean) {
+        this.files.add(0, fIleBean);
+        return this;
+    }
+
     @NonNull
     public PictureGroup addFiles(List<FileBean> fileBeans) {
         this.files.addAll(fileBeans);

@@ -1,5 +1,6 @@
 package me.luzhuo.storedemo;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,9 +11,11 @@ import java.util.ListIterator;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import me.luzhuo.lib_core.ui.toast.ToastManager;
+import me.luzhuo.lib_file.bean.AudioFileBean;
 import me.luzhuo.lib_file.bean.CheckableFileBean;
 import me.luzhuo.lib_file.bean.ImageFileBean;
 import me.luzhuo.lib_picture_compress.PictureSelectView;
+import me.luzhuo.lib_picture_select.PictureSelectUtils;
 import me.luzhuo.lib_picture_select_view.PictureSelectOriginView;
 import me.luzhuo.lib_picture_select_view.callback.PictureViewSelectCallback;
 
@@ -78,10 +81,13 @@ public class PictureActivity extends AppCompatActivity {
     }
 
     public void ok(View view) {
-        List<CheckableFileBean> datas = picture_select.getDatas();
+        /*List<CheckableFileBean> datas = picture_select.getDatas();
         Log.e(TAG, "size: " + datas.size());
         for (CheckableFileBean data : datas) {
             Log.e(TAG, "data: " + data);
-        }
+        }*/
+
+        AudioFileBean audioFileBean = PictureSelectUtils.queryAudioByUri(this, Uri.parse("content://media/external/audio/media/8573"));
+        Log.e(TAG, "" + audioFileBean);
     }
 }

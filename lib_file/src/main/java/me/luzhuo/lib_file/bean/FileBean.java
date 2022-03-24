@@ -131,6 +131,7 @@ public class FileBean extends CheckableFileBean implements Parcelable, Serializa
         bucketName = in.readString();
         size = in.readLong();
         addedDate = in.readLong();
+        isOrigin = in.readInt() == 1;
     }
 
     @Override
@@ -144,6 +145,7 @@ public class FileBean extends CheckableFileBean implements Parcelable, Serializa
         dest.writeString(bucketName);
         dest.writeLong(size);
         dest.writeLong(addedDate);
+        dest.writeInt(isOrigin ? 1 : 0);
     }
 
     @Override

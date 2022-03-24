@@ -18,6 +18,7 @@ public class ImageCompressBean extends ImageFileBean implements CompressState {
 
     public ImageCompressBean(ImageFileBean imageFileBean) {
         super(imageFileBean.id, imageFileBean.fileName, imageFileBean.mimeType, imageFileBean.uriPath, imageFileBean.urlPath, imageFileBean.bucketId, imageFileBean.bucketName, imageFileBean.size, imageFileBean.addedDate, imageFileBean.width, imageFileBean.height);
+        super.isOrigin = imageFileBean.isOrigin;
     }
 
     @Override
@@ -43,6 +44,7 @@ public class ImageCompressBean extends ImageFileBean implements CompressState {
                 ", bucketName='" + bucketName + '\'' +
                 ", size=" + size +
                 ", addedDate=" + addedDate +
+                ", isOrigin=" + isOrigin +
                 '}';
     }
 }

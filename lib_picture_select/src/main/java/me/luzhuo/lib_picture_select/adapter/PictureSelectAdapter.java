@@ -24,8 +24,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import me.luzhuo.lib_core.ui.dialog.Dialog;
-import me.luzhuo.lib_core.ui.toast.ToastManager;
-import me.luzhuo.lib_file.FileManager;
 import me.luzhuo.lib_file.bean.AudioFileBean;
 import me.luzhuo.lib_file.bean.FileBean;
 import me.luzhuo.lib_file.bean.ImageFileBean;
@@ -44,7 +42,6 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
     private boolean isShowCamera;
     private boolean isSingleReturn;
     private Context context;
-    private FileManager fileManager;
     private PictureSelectAdapterListener listener;
     private ImageEngine imageEngine = GlideImageEngine.getInstance();
     private int selectCount = 0;
@@ -57,7 +54,6 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.maxCount = maxCount;
         this.isShowCamera = isShowCamera;
         this.isSingleReturn = maxCount <= 1;
-        this.fileManager = new FileManager();
     }
 
     @MainThread
@@ -72,6 +68,15 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.context = parent.getContext();
         if (viewType == TYPE_CAMERA) return new CameraHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.picture_select_item_camera, parent, false));
         else return new PictureHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.picture_select_item_picture, parent, false));
+    }
+
+    /**
+     * 是否有文件被选中
+     * @param isSelect true有文件被选中, false有文件被取消选中
+     */
+    public void setSelected(boolean isSelect) {
+        if (isSelect) this.selectCount++;
+        else this.selectCount--;
     }
 
     @Override
@@ -122,7 +127,7 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
         @Override
         public void onClick(View v) {
             if (v == picture_select_parent) {
-                if (listener != null) listener.onCamera(getSelectedSize() >= maxCount);
+                if (listener != null) listener.onCamera(selectCount >= maxCount);
             }
         }
     }
@@ -223,32 +228,35 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
                 return;
             }
 
-            if (!picture_select_pic_check.isSelected() && getSelectedSize() >= maxCount) {
+            if (!picture_select_pic_check.isSelected() && selectCount >= maxCount) {
                 showMaskErrorDialog();
                 return;
             }
 
-            boolean isExists;
+            // Glide 未加载完成时, 进行exists判断会造成系统ANR
+            /*boolean isExists;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) isExists = fileManager.exists(data.uriPath);
             else isExists = fileManager.exists(data.urlPath);
             if (!isExists) {
                 toastFileError();
                 return;
-            }
+            }*/
 
             if (isSelected) {
+                setSelected(false);
                 data.isChecked = false;
                 zoom(picture_select_pic, false);
             } else {
+                setSelected(true);
                 data.isChecked = true;
                 zoom(picture_select_pic, true);
                 picture_select_pic_check.startAnimation(AnimationUtils.loadAnimation(context, R.anim.picture_select_check_anim));
             }
 
             if (isSelected) { // true -> false   10 -> 9
-                if (getSelectedSize() >= maxCount - 1) notifyDataSetChanged();
+                if (selectCount >= maxCount - 1) notifyDataSetChanged();
             } else { // false -> true   9 -> 10
-                if (getSelectedSize() >= maxCount) notifyDataSetChanged();
+                if (selectCount >= maxCount) notifyDataSetChanged();
             }
 
             selectCheckBox(data.isChecked);
@@ -262,6 +270,7 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
         private void showImage(int position) {
             FileBean data = mDatas.get(position);
             if (isSingleReturn) {
+                data.isChecked = true;
                 if (listener != null) listener.onSelect(isSingleReturn, data);
             } else {
                 if (listener != null) listener.onShow(data, position, mDatas);
@@ -281,7 +290,7 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
          * 不可选图片的遮罩
          */
         private void setSelectableMask(FileBean data) {
-            if (getSelectedSize() >= maxCount) {
+            if (selectCount >= maxCount) {
                 boolean isSelected = picture_select_pic_check.isSelected();
                 ColorFilter colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(isSelected ? 0x80000000 : 0x99FFFFFF, BlendModeCompat.SRC_ATOP);
                 picture_select_pic.setColorFilter(colorFilter);
@@ -297,7 +306,7 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
         private void showMaskErrorDialog() {
             StringBuilder content = new StringBuilder()
                     .append("你最多只能选择")
-                    .append(getSelectedSize());
+                    .append(maxCount);
 
             if (fileType == FileStore.TypeImage || fileType == FileStore.TypeGif || fileType == FileStore.TypeImage + FileStore.TypeGif) content.append("张");
             else content.append("个");
@@ -313,12 +322,12 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
         /**
          * 文件损坏的提示信息
          */
-        private void toastFileError() {
+        /*private void toastFileError() {
             if (fileType == FileStore.TypeImage || fileType == FileStore.TypeGif || fileType == FileStore.TypeImage + FileStore.TypeGif) ToastManager.show(context, "图片已损坏!");
             else if (fileType == FileStore.TypeVideo) ToastManager.show(context, "视频已损坏!");
             else if (fileType == FileStore.TypeAudio) ToastManager.show(context, "音频已损坏!");
             else ToastManager.show(context, "文件已损坏!");
-        }
+        }*/
 
         /**
          * 选中/取消选中 图片时, 图片的放大/缩放效果
@@ -339,17 +348,6 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
             if (width <= 0 || height <= 0) return false;
             return height > width * 3;
         }
-    }
-
-    /**
-     * 获取当前选中图片的数量
-     */
-    private int getSelectedSize() {
-        int selectCount = 0;
-        for (FileBean fileBean : mDatas) {
-            if (fileBean.isChecked) selectCount += 1;
-        }
-        return selectCount;
     }
 
     public void setPictureSelectListener(PictureSelectAdapterListener listener) {

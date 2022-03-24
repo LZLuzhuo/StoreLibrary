@@ -18,6 +18,7 @@ public class AudioCompressBean extends AudioFileBean implements CompressState{
 
     public AudioCompressBean(AudioFileBean audioFileBean) {
         super(audioFileBean.id, audioFileBean.fileName, audioFileBean.mimeType, audioFileBean.uriPath, audioFileBean.urlPath, audioFileBean.bucketId, audioFileBean.bucketName, audioFileBean.size, audioFileBean.addedDate, audioFileBean.duration);
+        super.isOrigin = audioFileBean.isOrigin;
     }
 
     @Override
@@ -42,6 +43,7 @@ public class AudioCompressBean extends AudioFileBean implements CompressState{
                 ", bucketName='" + bucketName + '\'' +
                 ", size=" + size +
                 ", addedDate=" + addedDate +
+                ", isOrigin=" + isOrigin +
                 '}';
     }
 }

@@ -2,6 +2,7 @@ package me.luzhuo.lib_picture_select.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -14,9 +15,7 @@ import java.util.Map;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.fragment.app.FragmentActivity;
 import me.luzhuo.lib_core.app.color.ColorManager;
 import me.luzhuo.lib_file.bean.FileBean;
 import me.luzhuo.lib_picture_select.R;
@@ -91,6 +90,16 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
         }
     }
 
+    /**
+     * 获取指定相册组里的文件
+     * @param bucketId 相册组id
+     * @return 相册组数据
+     */
+    @Nullable
+    public PictureGroup getBucket(long bucketId) {
+        return pictureBucket.get(bucketId);
+    }
+
     @Override
     public void onClick(View v) {
         if (v == picture_select_complete) {
@@ -117,24 +126,6 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
         updateBucket(bucket);
     }
 
-    public interface PictureSelectHeaderListener {
-        /**
-         * 用户点击了发送按钮
-         * 仅在有选中图片的时候才回调
-         */
-        public void onCompleteButton();
-
-        /**
-         * 切换相册组
-         * @param files 如果切换到相册组没有数据, 则返回null
-         */
-        public void onSwitchBucket(@Nullable List<FileBean> files);
-    }
-
-    public void setOnPictureSelectHeaderListener(@Nullable PictureSelectHeaderListener listener) {
-        this.listener = listener;
-    }
-
     /**
      * 设置相册分组
      */
@@ -157,12 +148,52 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
      * 更新相册分组数据
      */
     @MainThread
-    private void updateBucket(long bucketId) {
+    public void updateBucket(long bucketId) {
         this.currentBucketId = bucketId;
         PictureGroup pictureGroup = pictureBucket.get(currentBucketId);
         if (listener != null) {
             if (pictureGroup != null) listener.onSwitchBucket(pictureGroup.files);
             else listener.onSwitchBucket(null);
         }
+    }
+
+    /**
+     * 添加File到相册分组
+     * @param fileBean 预添加的文件
+     */
+    public void addFile2Bucket(FileBean fileBean) {
+        // 所有相册
+        if (fileBean.bucketId != DefaultBucketId) {
+            PictureGroup pictureGroup = pictureBucket.get(DefaultBucketId);
+            if (pictureGroup != null) {
+                pictureGroup.addFile(0, fileBean);
+            }
+        }
+
+        // 其他相册
+        PictureGroup pictureGroup = pictureBucket.get(fileBean.bucketId);
+        if (pictureGroup == null) {
+            pictureGroup = new PictureGroup(fileBean.bucketId, fileBean.bucketName);
+            this.pictureBucket.put(fileBean.bucketId, pictureGroup);
+        }
+        pictureGroup.addFile(0, fileBean);
+    }
+
+    public interface PictureSelectHeaderListener {
+        /**
+         * 用户点击了发送按钮
+         * 仅在有选中图片的时候才回调
+         */
+        public void onCompleteButton();
+
+        /**
+         * 切换相册组
+         * @param files 如果切换到相册组没有数据, 则返回null
+         */
+        public void onSwitchBucket(@Nullable List<FileBean> files);
+    }
+
+    public void setOnPictureSelectHeaderListener(@Nullable PictureSelectHeaderListener listener) {
+        this.listener = listener;
     }
 }

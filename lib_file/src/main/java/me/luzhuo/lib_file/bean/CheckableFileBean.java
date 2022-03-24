@@ -14,10 +14,6 @@
  */
 package me.luzhuo.lib_file.bean;
 
-import android.os.Parcelable;
-
-import java.io.Serializable;
-
 /**
  * Description: 可选中的文件
  * @Author: Luzhuo
@@ -35,4 +31,9 @@ public abstract class CheckableFileBean {
      * 是否可选
      */
     public boolean isCheckable = true;
+
+    /**
+     * 是否需要保持原文件
+     */
+    public boolean isOrigin = false;
 }

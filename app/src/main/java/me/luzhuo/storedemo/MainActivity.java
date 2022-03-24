@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }*/
 
-        PictureSelectActivity.start(this, startActivity, TypeImage | TypeVideo | TypeAudio | TypeGif, 9, true);
+        PictureSelectActivity.start(this, startActivity, TypeImage | TypeVideo | TypeAudio | TypeGif, 9, true, true);
     }
 
     final ActivityResultLauncher<Intent> startActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
             public void onPictureSelect(List<FileBean> selectFiles) {
                 Log.e(TAG, "" + selectFiles);
             }
-        }, TypeImage | TypeVideo | TypeAudio | TypeGif, 9, true);
+        }, TypeImage | TypeVideo | TypeAudio | TypeGif, 9, true, true);
 
 //        InputStream inputStream = getAssets().open("music.flac");
 //        boolean b = new FileStoreManager(this).saveFile("music.flac", "", inputStream);

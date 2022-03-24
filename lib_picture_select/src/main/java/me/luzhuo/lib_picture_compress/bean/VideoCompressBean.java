@@ -18,6 +18,7 @@ public class VideoCompressBean extends VideoFileBean implements CompressState {
 
     public VideoCompressBean(VideoFileBean videoFileBean) {
         super(videoFileBean.id, videoFileBean.fileName, videoFileBean.mimeType, videoFileBean.uriPath, videoFileBean.urlPath, videoFileBean.bucketId, videoFileBean.bucketName, videoFileBean.size, videoFileBean.addedDate, videoFileBean.width, videoFileBean.height, videoFileBean.duration);
+        super.isOrigin = videoFileBean.isOrigin;
     }
 
     @Override
@@ -44,6 +45,7 @@ public class VideoCompressBean extends VideoFileBean implements CompressState {
                 ", bucketName='" + bucketName + '\'' +
                 ", size=" + size +
                 ", addedDate=" + addedDate +
+                ", isOrigin=" + isOrigin +
                 '}';
     }
 }

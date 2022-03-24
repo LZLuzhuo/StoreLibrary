@@ -110,7 +110,7 @@ public class PictureSelectOriginView extends RecyclerView implements OnPictureAd
 
     @Override
     public void onPictureAdapterSelect() {
-        PictureSelectActivity.start(getContext(), pictureSelectListener, flags, maxCount - adapter.getItemCount() + 1, showCamera);
+        PictureSelectActivity.start(getContext(), pictureSelectListener, flags, maxCount - adapter.getItemCount() + 1, showCamera, isOriginal);
     }
 
     protected PictureSelectListener pictureSelectListener = new PictureSelectListener() {
