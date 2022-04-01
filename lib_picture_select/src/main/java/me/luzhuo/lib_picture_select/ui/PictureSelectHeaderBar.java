@@ -28,6 +28,7 @@ import me.luzhuo.lib_picture_select.bean.PictureGroup;
 public class PictureSelectHeaderBar extends RelativeLayout implements View.OnClickListener, HeaderBucketPopAdapter.OnBucketPopCallback {
     private TextView picture_select_complete;
     private View bucket_select;
+    private TextView bucket_select_name;
     private final ColorManager color = new ColorManager();
     @Nullable
     private PictureSelectHeaderListener listener;
@@ -67,6 +68,7 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
         LayoutInflater.from(getContext()).inflate(R.layout.picture_select_layout_header_bar, this, true);
         picture_select_complete = findViewById(R.id.picture_select_complete);
         bucket_select = findViewById(R.id.bucket_select);
+        bucket_select_name = findViewById(R.id.bucket_select_name);
 
         picture_select_complete.setOnClickListener(this);
         bucket_select.setOnClickListener(this);
@@ -127,6 +129,13 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
     }
 
     /**
+     * 获取已选择的文件数量
+     */
+    public int getSelectCount() {
+        return selectCount;
+    }
+
+    /**
      * 设置相册分组
      */
     @WorkerThread
@@ -151,6 +160,7 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
     public void updateBucket(long bucketId) {
         this.currentBucketId = bucketId;
         PictureGroup pictureGroup = pictureBucket.get(currentBucketId);
+        bucket_select_name.setText(pictureGroup.bucketName);
         if (listener != null) {
             if (pictureGroup != null) listener.onSwitchBucket(pictureGroup.files);
             else listener.onSwitchBucket(null);

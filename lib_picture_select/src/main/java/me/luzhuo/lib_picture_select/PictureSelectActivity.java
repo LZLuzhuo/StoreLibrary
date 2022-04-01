@@ -215,7 +215,7 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
 
     @Override
     public void onShow(FileBean file, int index, List<FileBean> files) {
-        Log.e(TAG, "显示的文件: " + index + " : " + files + " : " + file);
+        PictureSelectPreviewActivity.start(this, index, files, picture_select_header.getBucket(DefaultBucketId).files, picture_select_header.getSelectCount(), maxCount, previewListener);
     }
 
     @Override
@@ -258,9 +258,18 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
 
     @Override
     public void onCompleteButton() {
+        selectComplete(getSelectedFiles());
+    }
+
+    /**
+     * 获取所有已选中的文件
+     * @return 没有已选中的文件, 返回空集合
+     */
+    @NonNull
+    public ArrayList<FileBean> getSelectedFiles() {
         ArrayList<FileBean> selectedFiles = new ArrayList<>();
         PictureGroup bucketGroup = picture_select_header.getBucket(DefaultBucketId);
-        if (bucketGroup == null) return;
+        if (bucketGroup == null) return selectedFiles;
 
         for (FileBean fileBean : bucketGroup.files) {
             if (fileBean.isChecked) {
@@ -268,7 +277,7 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
                 selectedFiles.add(fileBean);
             }
         }
-        selectComplete(selectedFiles);
+        return selectedFiles;
     }
 
     @Override
@@ -295,6 +304,10 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
 
     @Override
     public void onPreview() {
-        // TODO　预览
+        PictureSelectPreviewActivity.start(this, 0, getSelectedFiles(), picture_select_header.getBucket(DefaultBucketId).files, picture_select_header.getSelectCount(), maxCount, previewListener);
     }
+
+    private PictureSelectPreviewActivity.PictureSelectPreviewListener previewListener = new PictureSelectPreviewActivity.PictureSelectPreviewListener(){
+
+    };
 }

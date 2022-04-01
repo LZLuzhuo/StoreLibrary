@@ -14,10 +14,10 @@
 
     <me.luzhuo.lib_picture_compress.PictureSelectView
         android:id="@+id/picture_select"
-        app:picture_flags="Images"
+        app:picture_flags="Images|Gif|Audio|Videos"
         app:picture_action_select="false"
         app:picture_action_delete="false"
-        app:picture_is_original="false"
+        app:picture_is_original="true"
         app:picture_show_camera="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>

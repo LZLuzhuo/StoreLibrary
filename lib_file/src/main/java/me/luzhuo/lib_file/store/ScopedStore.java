@@ -22,7 +22,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -37,7 +36,6 @@ import me.luzhuo.lib_file.bean.FileBean;
 import me.luzhuo.lib_file.bean.ImageFileBean;
 import me.luzhuo.lib_file.bean.VideoFileBean;
 import me.luzhuo.lib_file.enums.FileType;
-import me.luzhuo.lib_file.enums.MIMETypes;
 
 /**
  * Description: 沙盘存储

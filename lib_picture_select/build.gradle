@@ -39,4 +39,5 @@ dependencies {
 
     implementation 'me.luzhuo.android:lib_permission:1.1.4-SNAPSHOT'
     implementation 'com.github.bumptech.glide:glide:4.10.0'
+    implementation 'me.luzhuo.android:library_photoview:1.0.1-SNAPSHOT'
 }

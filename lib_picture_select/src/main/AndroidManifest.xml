@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application>
-        <activity android:name=".PictureSelectActivity" android:configChanges="orientation|keyboardHidden|screenSize" android:theme="@style/picture_select_theme"/>
+        <activity android:name=".PictureSelectActivity" android:configChanges="orientation|keyboardHidden|screenSize" android:theme="@style/picture_select_theme" />
+        <activity android:name=".PictureSelectPreviewActivity" android:configChanges="orientation|keyboardHidden|screenSize" android:theme="@style/picture_select_theme" />
     </application>
 </manifest>
