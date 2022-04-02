@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/picture_select_preview_center">
 
-    <androidx.viewpager2.widget.ViewPager2
+    <me.luzhuo.lib_picture_select.HackyViewPager
         android:id="@+id/picture_select_preview_viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

@@ -30,7 +30,7 @@ android {
 dependencies {
 
     // implementation project(path: ':lib_file')
-    api 'me.luzhuo.android:lib_core:2.3.34-SNAPSHOT'
+    api 'me.luzhuo.android:lib_core:2.3.36-SNAPSHOT'
     compileOnly 'androidx.constraintlayout:constraintlayout:2.0.4'
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
