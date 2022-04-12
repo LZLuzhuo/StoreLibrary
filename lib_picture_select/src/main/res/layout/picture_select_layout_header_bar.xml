@@ -14,7 +14,7 @@
         android:src="@mipmap/picture_select_icon_close" />
 
     <RelativeLayout
-        android:id="@+id/bucket_select"
+        android:id="@+id/picture_select_bucket_select"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -23,7 +23,7 @@
         android:background="@drawable/picture_select_bg_bucket">
 
         <TextView
-            android:id="@+id/bucket_select_name"
+            android:id="@+id/picture_select_bucket_select_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableRight="@mipmap/picture_select_icon_down"

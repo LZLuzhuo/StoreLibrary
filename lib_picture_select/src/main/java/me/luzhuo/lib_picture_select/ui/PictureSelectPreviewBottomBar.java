@@ -63,6 +63,27 @@ public class PictureSelectPreviewBottomBar extends RelativeLayout implements Com
     }
 
     /**
+     * 当前位置的文件
+     */
+    public void currentSelectedData(FileBean data) {
+        adapter.currentSelected(data);
+    }
+
+    /**
+     * 添加被选中的文件
+     */
+    public void addSelectedData(FileBean data) {
+        adapter.addSelected(data);
+    }
+
+    /**
+     * 移除被选中的文件
+     */
+    public void removeSelectedData(FileBean data) {
+        adapter.removeSelected(data);
+    }
+
+    /**
      * 检查是否选中
      */
     public void checkSelect(boolean checkSelect) {

@@ -22,10 +22,10 @@ import me.luzhuo.lib_file.bean.VideoFileBean;
 import me.luzhuo.lib_picture_select.R;
 import me.luzhuo.lib_picture_select.bean.PictureGroup;
 import me.luzhuo.lib_picture_select.engine.GlideImageEngine;
-import me.luzhuo.lib_picture_select.engine.ImageEngine;
+import me.luzhuo.lib_picture_select.engine.GridImageEngine;
 
 public class HeaderBucketPopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private ImageEngine imageEngine = GlideImageEngine.getInstance();
+    private GridImageEngine imageEngine = GlideImageEngine.getInstance();
     private Context context;
     private List<PictureGroup> pictureBucket = new ArrayList<>();
     private long bucketId = 0;

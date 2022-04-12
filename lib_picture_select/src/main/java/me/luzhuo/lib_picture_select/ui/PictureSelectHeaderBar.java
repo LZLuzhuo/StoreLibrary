@@ -2,7 +2,6 @@ package me.luzhuo.lib_picture_select.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -27,9 +26,10 @@ import me.luzhuo.lib_picture_select.bean.PictureGroup;
  * 相册选择的头部
  */
 public class PictureSelectHeaderBar extends RelativeLayout implements View.OnClickListener, HeaderBucketPopAdapter.OnBucketPopCallback {
-    private TextView picture_select_complete;
-    private View bucket_select;
-    private TextView bucket_select_name;
+    private final TextView select_complete;
+    private final View bucket_select;
+    private final TextView bucket_select_name;
+    private final View select_close;
     private final ColorManager color = new ColorManager();
     @Nullable
     private PictureSelectHeaderListener listener;
@@ -62,12 +62,14 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
 
     {
         LayoutInflater.from(getContext()).inflate(R.layout.picture_select_layout_header_bar, this, true);
-        picture_select_complete = findViewById(R.id.picture_select_complete);
-        bucket_select = findViewById(R.id.bucket_select);
-        bucket_select_name = findViewById(R.id.bucket_select_name);
+        select_complete = findViewById(R.id.picture_select_complete);
+        bucket_select = findViewById(R.id.picture_select_bucket_select);
+        bucket_select_name = findViewById(R.id.picture_select_bucket_select_name);
+        select_close = findViewById(R.id.picture_select_close);
 
-        picture_select_complete.setOnClickListener(this);
+        select_complete.setOnClickListener(this);
         bucket_select.setOnClickListener(this);
+        select_close.setOnClickListener(this);
 
         bucketPop = new HeaderBucketPopWindow(getContext());
         bucketPop.setAnchorView(this);
@@ -86,13 +88,13 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
 
     public void updateCompleteButton() {
         if (getSelectCount() > 0) {
-            picture_select_complete.setBackgroundResource(R.drawable.picture_select_bg_complete);
-            picture_select_complete.setTextColor(color.getColor(R.color.picture_select_complete_text));
-            picture_select_complete.setText(String.format(Locale.CHINESE, "完成(%d/%d)", getSelectCount(), getMaxCount()));
+            select_complete.setBackgroundResource(R.drawable.picture_select_bg_complete);
+            select_complete.setTextColor(color.getColor(R.color.picture_select_complete_text));
+            select_complete.setText(String.format(Locale.CHINESE, "完成(%d/%d)", getSelectCount(), getMaxCount()));
         } else {
-            picture_select_complete.setBackgroundResource(R.drawable.picture_select_bg_complete_default);
-            picture_select_complete.setTextColor(color.getColor(R.color.picture_select_complete_text_default));
-            picture_select_complete.setText("完成");
+            select_complete.setBackgroundResource(R.drawable.picture_select_bg_complete_default);
+            select_complete.setTextColor(color.getColor(R.color.picture_select_complete_text_default));
+            select_complete.setText("完成");
         }
     }
 
@@ -108,11 +110,13 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
 
     @Override
     public void onClick(View v) {
-        if (v == picture_select_complete) {
+        if (v == select_complete) {
             if (getSelectCount() > 0 && listener != null) listener.onCompleteButton();
         } else if (v == bucket_select) {
             bucketPop.setDatas(pictureBucket);
             bucketPop.show(currentBucketId);
+        } else if (v == select_close) {
+            if (listener != null) listener.onClose();
         }
     }
 
@@ -187,6 +191,11 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
          * @param files 如果切换到相册组没有数据, 则返回null
          */
         public void onSwitchBucket(@Nullable List<FileBean> files);
+
+        /**
+         * 关闭
+         */
+        public void onClose();
     }
 
     public void setOnPictureSelectHeaderListener(@Nullable PictureSelectHeaderListener listener) {

@@ -32,6 +32,7 @@ import me.luzhuo.lib_file.enums.FileType;
 import me.luzhuo.lib_file.store.FileStore;
 import me.luzhuo.lib_picture_select.R;
 import me.luzhuo.lib_picture_select.engine.GlideImageEngine;
+import me.luzhuo.lib_picture_select.engine.GridImageEngine;
 import me.luzhuo.lib_picture_select.engine.ImageEngine;
 
 public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -42,7 +43,7 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
     private boolean isSingleReturn;
     private Context context;
     private PictureSelectAdapterListener listener;
-    private ImageEngine imageEngine = GlideImageEngine.getInstance();
+    private GridImageEngine imageEngine = GlideImageEngine.getInstance();
     public static int selectCount = 0;
     public static int maxCount;
 

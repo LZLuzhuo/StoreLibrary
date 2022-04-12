@@ -22,7 +22,7 @@ import me.luzhuo.lib_file.bean.ImageFileBean;
 import me.luzhuo.lib_file.bean.VideoFileBean;
 import me.luzhuo.lib_picture_select.R;
 import me.luzhuo.lib_picture_select.engine.GlideImageEngine;
-import me.luzhuo.lib_picture_select.engine.ImageEngine;
+import me.luzhuo.lib_picture_select.engine.GridImageEngine;
 import me.luzhuo.lib_picture_select_view.bean.AudioNetBean;
 import me.luzhuo.lib_picture_select_view.bean.ImageNetBean;
 import me.luzhuo.lib_picture_select_view.bean.VideoNetBean;
@@ -35,7 +35,7 @@ public class PictureViewShowAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private int layout_show;
     @Nullable
     private OnPictureAdapterShowListener listener;
-    private final ImageEngine imageEngine = GlideImageEngine.getInstance();
+    private final GridImageEngine imageEngine = GlideImageEngine.getInstance();
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     public PictureViewShowAdapter(@LayoutRes int layout_show) {

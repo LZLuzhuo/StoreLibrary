@@ -12,7 +12,7 @@ import me.luzhuo.lib_picture_select.R;
 /**
  * 使用Glide实现图片加载
  */
-public class GlideImageEngine implements ImageEngine {
+public class GlideImageEngine implements GridImageEngine, ImageEngine {
     private GlideImageEngine() {}
 
     private static GlideImageEngine instance = new GlideImageEngine();
@@ -64,5 +64,15 @@ public class GlideImageEngine implements ImageEngine {
     @Override
     public void loadGridOther(@NonNull Context context, int redId, @NonNull ImageView imageView) {
         Glide.with(context).load(redId).override(300, 300).centerCrop().into(imageView);
+    }
+
+    @Override
+    public void loadGif(@NonNull Context context, @NonNull Uri uri, @NonNull ImageView imageView) {
+        Glide.with(context).asGif().load(uri).into(imageView);
+    }
+
+    @Override
+    public void loadGif(@NonNull Context context, @NonNull String url, @NonNull ImageView imageView) {
+        Glide.with(context).asGif().load(url).into(imageView);
     }
 }

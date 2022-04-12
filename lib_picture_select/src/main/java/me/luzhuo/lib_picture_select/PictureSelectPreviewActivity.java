@@ -30,10 +30,12 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
     /**
      * 当前预览的相册组
      */
+    @Nullable
     private static List<FileBean> currentBucketFiles;
     /**
      * 所有的相册文件, 用于展示已选中的文件
      */
+    @Nullable
     private static List<FileBean> allFiles;
     @Nullable
     private static OnPictureSelectPreviewListener listener;
@@ -60,6 +62,8 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
         super.onCreate(bundle);
         StatusBarManager.getInstance().transparent(this, false);
         setContentView(R.layout.picture_select_activity_preview);
+        overridePendingTransition(R.anim.picture_select_preview_activity_in, R.anim.picture_select_activity_normal);
+
         index = getIntent().getIntExtra("index", 0);
 
         initView();
@@ -80,6 +84,7 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
         preview_viewpager.addOnPageChangeListener(new OnPageChangeListenerImpl() {
             @Override
             public void onPageSelected(int position) {
+                if (currentBucketFiles == null) return;
                 preview_header.setCurrentIndex(position, currentBucketFiles.size());
                 updateFileBean(currentBucketFiles.get(position));
             }
@@ -89,6 +94,7 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
     }
 
     private void initData() {
+        if (allFiles == null || currentBucketFiles == null) return;
         List<FileBean> currentSelectFiles = getCurrentSelectFiles(allFiles);
         preview_bottom.setSelectPreviewDatas(currentSelectFiles);
         preview_header.updateCompleteButton();
@@ -102,6 +108,12 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
             if (fileBean.isChecked) selectFiles.add(fileBean);
         }
         return selectFiles;
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.picture_select_activity_normal, R.anim.picture_select_preview_activity_out);
     }
 
     @Override
@@ -135,11 +147,13 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
 
     /**
      * 更新文件相关的界面
-     * 1. 是否选中
+     * 1. 底部选择 是否选中
+     * 2. 底部列表 选框是否选中
      */
     private void updateFileBean(FileBean data) {
         this.currentFileData = data;
         preview_bottom.checkSelect(data.isChecked);
+        preview_bottom.currentSelectedData(data);
     }
 
     @Override
@@ -148,6 +162,10 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
         if (listener != null) listener.onCheckedChanged(isChecked);
 
         preview_header.updateCompleteButton();
+        if (isChecked) {
+            preview_bottom.addSelectedData(currentFileData);
+            preview_bottom.currentSelectedData(currentFileData);
+        } else preview_bottom.removeSelectedData(currentFileData);
     }
 
     @Override

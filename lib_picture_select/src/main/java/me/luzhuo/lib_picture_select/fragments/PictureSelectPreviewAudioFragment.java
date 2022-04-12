@@ -1,28 +1,24 @@
 package me.luzhuo.lib_picture_select.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-
-import com.github.chrisbanes.photoview.PhotoView;
 
 import androidx.annotation.Nullable;
 import me.luzhuo.lib_core.app.base.CoreBaseFragment;
 import me.luzhuo.lib_file.bean.FileBean;
 import me.luzhuo.lib_picture_select.R;
 
-public class PictureSelectPreviewFragment extends CoreBaseFragment implements View.OnClickListener {
+public class PictureSelectPreviewAudioFragment extends CoreBaseFragment implements View.OnClickListener {
     private FileBean data;
     @Nullable
     private PictureSelectPreviewCallback callback;
 
-    private PictureSelectPreviewFragment() { }
+    private PictureSelectPreviewAudioFragment() { }
 
-    public static PictureSelectPreviewFragment instance(FileBean data) {
-        PictureSelectPreviewFragment fragment = new PictureSelectPreviewFragment();
+    public static PictureSelectPreviewAudioFragment instance(FileBean data) {
+        PictureSelectPreviewAudioFragment fragment = new PictureSelectPreviewAudioFragment();
         Bundle args = new Bundle();
         args.putParcelable("data", data);
         fragment.setArguments(args);
@@ -38,18 +34,16 @@ public class PictureSelectPreviewFragment extends CoreBaseFragment implements Vi
 
     @Override
     public View initView(LayoutInflater layoutInflater, ViewGroup viewGroup) {
-        return layoutInflater.inflate(R.layout.picture_select_item_preview_image, viewGroup, false);
+        return layoutInflater.inflate(R.layout.picture_select_item_preview_audio, viewGroup, false);
     }
 
     @Override
     public void initData(Bundle bundle) {
-        PhotoView preview_photoview = getView().findViewById(R.id.picture_select_preview_photoview);
-        preview_photoview.setScaleType(ImageView.ScaleType.CENTER);
-        preview_photoview.setImageURI(data.uriPath);
-        preview_photoview.getAttacher().setOnClickListener(this);
+        getView().setOnClickListener(this);
+        // TODO Audio Detail
     }
 
-    public PictureSelectPreviewFragment setOnPictureSelectPreviewCallback(PictureSelectPreviewCallback callback) {
+    public PictureSelectPreviewAudioFragment setOnPictureSelectPreviewCallback(PictureSelectPreviewCallback callback) {
         this.callback = callback;
         return this;
     }

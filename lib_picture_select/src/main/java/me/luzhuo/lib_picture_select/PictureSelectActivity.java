@@ -97,6 +97,8 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.picture_select_activity);
+        overridePendingTransition(R.anim.picture_select_activity_in, R.anim.picture_select_activity_normal);
+
         fileType = getIntent().getIntExtra("fileType", TypeImage);
         maxCount = getIntent().getIntExtra("maxCount", 0);
         isShowCamera = getIntent().getBooleanExtra("isShowCamera", false);
@@ -280,6 +282,17 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
     @Override
     public void onSwitchBucket(@Nullable List<FileBean> files) {
         adapter.setData(files);
+    }
+
+    @Override
+    public void onClose() {
+        finish();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.picture_select_activity_normal, R.anim.picture_select_activity_out);
     }
 
     private void selectComplete(ArrayList<FileBean> selectFiles) {

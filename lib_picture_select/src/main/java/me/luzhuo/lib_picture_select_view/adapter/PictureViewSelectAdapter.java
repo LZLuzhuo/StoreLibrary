@@ -24,7 +24,7 @@ import me.luzhuo.lib_file.bean.VideoFileBean;
 import me.luzhuo.lib_file.store.FileStore;
 import me.luzhuo.lib_picture_select.R;
 import me.luzhuo.lib_picture_select.engine.GlideImageEngine;
-import me.luzhuo.lib_picture_select.engine.ImageEngine;
+import me.luzhuo.lib_picture_select.engine.GridImageEngine;
 import me.luzhuo.lib_picture_select_view.bean.AudioNetBean;
 import me.luzhuo.lib_picture_select_view.bean.ImageNetBean;
 import me.luzhuo.lib_picture_select_view.bean.VideoNetBean;
@@ -42,7 +42,7 @@ public class PictureViewSelectAdapter extends RecyclerView.Adapter<RecyclerView.
     private Context context;
     private int maxCount;
     private int type; // 能选择的文件类型
-    private final ImageEngine imageEngine = GlideImageEngine.getInstance();
+    private final GridImageEngine imageEngine = GlideImageEngine.getInstance();
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     public PictureViewSelectAdapter(@LayoutRes int layout_add, @LayoutRes int layout_normal, @FileStore.TypeFileStore int type, int maxCount) {
