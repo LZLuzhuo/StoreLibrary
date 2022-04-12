@@ -20,6 +20,7 @@ import me.luzhuo.lib_core.app.color.ColorManager;
 import me.luzhuo.lib_file.bean.FileBean;
 import me.luzhuo.lib_picture_select.R;
 import me.luzhuo.lib_picture_select.adapter.HeaderBucketPopAdapter;
+import me.luzhuo.lib_picture_select.adapter.PictureSelectAdapter;
 import me.luzhuo.lib_picture_select.bean.PictureGroup;
 
 /**
@@ -32,11 +33,6 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
     private final ColorManager color = new ColorManager();
     @Nullable
     private PictureSelectHeaderListener listener;
-    /**
-     * 相册被选中的数量, 有相册被选中之后, 才能点击发送按钮
-     */
-    private int selectCount = 0;
-    private int maxCount = 0;
 
     /**
      * 相册组
@@ -77,14 +73,22 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
         bucketPop.setAnchorView(this);
         bucketPop.setOnBucketPopCallback(this);
 
-        completeButtonStyle();
+        updateCompleteButton();
     }
 
-    private void completeButtonStyle() {
-        if (selectCount > 0) {
+    public int getSelectCount() {
+        return PictureSelectAdapter.selectCount;
+    }
+
+    public int getMaxCount() {
+        return PictureSelectAdapter.maxCount;
+    }
+
+    public void updateCompleteButton() {
+        if (getSelectCount() > 0) {
             picture_select_complete.setBackgroundResource(R.drawable.picture_select_bg_complete);
             picture_select_complete.setTextColor(color.getColor(R.color.picture_select_complete_text));
-            picture_select_complete.setText(String.format(Locale.CHINESE, "完成(%d/%d)", selectCount, maxCount));
+            picture_select_complete.setText(String.format(Locale.CHINESE, "完成(%d/%d)", getSelectCount(), getMaxCount()));
         } else {
             picture_select_complete.setBackgroundResource(R.drawable.picture_select_bg_complete_default);
             picture_select_complete.setTextColor(color.getColor(R.color.picture_select_complete_text_default));
@@ -105,34 +109,16 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
     @Override
     public void onClick(View v) {
         if (v == picture_select_complete) {
-            if (selectCount > 0 && listener != null) listener.onCompleteButton();
+            if (getSelectCount() > 0 && listener != null) listener.onCompleteButton();
         } else if (v == bucket_select) {
             bucketPop.setDatas(pictureBucket);
             bucketPop.show(currentBucketId);
         }
     }
 
-    /**
-     * 设置发送按钮状态
-     * @param isSelected true有图片被选中, false没有图片被选中
-     */
-    public void setCompleteButton(boolean isSelected, int maxCount) {
-        if (isSelected) selectCount++;
-        else selectCount--;
-        this.maxCount = maxCount;
-        completeButtonStyle();
-    }
-
     @Override
     public void onBucketSelect(long bucket) {
         updateBucket(bucket);
-    }
-
-    /**
-     * 获取已选择的文件数量
-     */
-    public int getSelectCount() {
-        return selectCount;
     }
 
     /**

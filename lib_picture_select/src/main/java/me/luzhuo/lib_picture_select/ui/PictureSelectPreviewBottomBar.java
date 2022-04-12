@@ -2,19 +2,19 @@ package me.luzhuo.lib_picture_select.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import me.luzhuo.lib_core.ui.dialog.Dialog;
 import me.luzhuo.lib_file.bean.FileBean;
 import me.luzhuo.lib_picture_select.R;
+import me.luzhuo.lib_picture_select.adapter.PictureSelectAdapter;
 import me.luzhuo.lib_picture_select.adapter.PictureSelectPreviewBottomAdapter;
 
 /**
@@ -50,6 +50,14 @@ public class PictureSelectPreviewBottomBar extends RelativeLayout implements Com
         preview_bottom_list.setAdapter(adapter);
     }
 
+    public int getSelectCount() {
+        return PictureSelectAdapter.selectCount;
+    }
+
+    public int getMaxCount() {
+        return PictureSelectAdapter.maxCount;
+    }
+
     public void setSelectPreviewDatas(List<FileBean> datas) {
         adapter.setData(datas);
     }
@@ -63,7 +71,17 @@ public class PictureSelectPreviewBottomBar extends RelativeLayout implements Com
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (!buttonView.isPressed()) return; // 不处理非用户触发的回调
+        // 不处理非用户触发的回调
+        if (!buttonView.isPressed()) return;
+
+        // 选择已达上限, 将不让选择
+        if (isChecked && getSelectCount() >= getMaxCount()) {
+            String content = new StringBuilder().append("你最多只能选择").append(getMaxCount()).append("文件").toString();
+            Dialog.instance().show(getContext(), "注意", content, "确定", null, true, null, null);
+            buttonView.setChecked(false);
+            return;
+        }
+
         if (callback != null) callback.onCheckedChanged(isChecked);
     }
 

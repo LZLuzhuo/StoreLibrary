@@ -25,8 +25,7 @@ import me.luzhuo.lib_picture_select.ui.PictureSelectPreviewHeaderBar;
 /**
  * 相册的预览功能
  */
-public class PictureSelectPreviewActivity extends CoreBaseActivity implements PictureSelectPreviewCallback, PictureSelectPreviewBottomBar.OnPreviewBottomBarCallback {
-    private static final String TAG = PictureSelectPreviewActivity.class.getSimpleName();
+public class PictureSelectPreviewActivity extends CoreBaseActivity implements PictureSelectPreviewCallback, PictureSelectPreviewBottomBar.OnPreviewBottomBarCallback, PictureSelectPreviewHeaderBar.OnPreviewHeaderBarCallback {
 
     /**
      * 当前预览的相册组
@@ -39,8 +38,6 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
     @Nullable
     private static OnPictureSelectPreviewListener listener;
     private int index;
-    private int selectCount;
-    private int maxCount;
 
     private ViewPager preview_viewpager;
     private PictureSelectPreviewHeaderBar preview_header;
@@ -49,14 +46,12 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
     private PictureSelectPreviewAdapter pictureSelectPreviewAdapter;
     private FileBean currentFileData;
 
-    public static void start(Context context, int index, List<FileBean> currentBucketFiles, List<FileBean> allFiles, int selectCount, int maxCount, OnPictureSelectPreviewListener listener) {
+    public static void start(Context context, int index, List<FileBean> currentBucketFiles, List<FileBean> allFiles, OnPictureSelectPreviewListener listener) {
         PictureSelectPreviewActivity.currentBucketFiles = currentBucketFiles;
         PictureSelectPreviewActivity.allFiles = allFiles;
         PictureSelectPreviewActivity.listener = listener;
         Intent intent = new Intent(context, PictureSelectPreviewActivity.class);
         intent.putExtra("index", index);
-        intent.putExtra("selectCount", selectCount);
-        intent.putExtra("maxCount", maxCount);
         context.startActivity(intent);
     }
 
@@ -66,8 +61,6 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
         StatusBarManager.getInstance().transparent(this, false);
         setContentView(R.layout.picture_select_activity_preview);
         index = getIntent().getIntExtra("index", 0);
-        selectCount = getIntent().getIntExtra("selectCount", 0);
-        maxCount = getIntent().getIntExtra("maxCount", 0);
 
         initView();
         initData();
@@ -79,6 +72,7 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
         preview_bottom = findViewById(R.id.picture_select_preview_bottom);
 
         preview_bottom.setOnPreviewBottomBarListener(this);
+        preview_header.setOnPreviewHeaderBarCallback(this);
 
         pictureSelectPreviewAdapter = new PictureSelectPreviewAdapter(this, currentBucketFiles);
         preview_viewpager.setAdapter(pictureSelectPreviewAdapter);
@@ -97,7 +91,7 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
     private void initData() {
         List<FileBean> currentSelectFiles = getCurrentSelectFiles(allFiles);
         preview_bottom.setSelectPreviewDatas(currentSelectFiles);
-        preview_header.setCompleteButton(currentSelectFiles.size(), maxCount);
+        preview_header.updateCompleteButton();
         preview_header.setCurrentIndex(index, currentBucketFiles.size());
         updateFileBean(currentBucketFiles.get(index));
     }
@@ -146,7 +140,6 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
     private void updateFileBean(FileBean data) {
         this.currentFileData = data;
         preview_bottom.checkSelect(data.isChecked);
-        // TODO
     }
 
     @Override
@@ -154,10 +147,17 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
         this.currentFileData.isChecked = isChecked;
         if (listener != null) listener.onCheckedChanged(isChecked);
 
-        preview_header.setCompleteButton(isChecked, maxCount);
+        preview_header.updateCompleteButton();
+    }
+
+    @Override
+    public void onComplete() {
+        finish();
+        if (listener != null) listener.onComplete();
     }
 
     public interface OnPictureSelectPreviewListener {
         public void onCheckedChanged(boolean isChecked);
+        public void onComplete();
     }
 }

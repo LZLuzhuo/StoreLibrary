@@ -14,20 +14,17 @@ import java.util.Locale;
 import androidx.annotation.Nullable;
 import me.luzhuo.lib_core.app.color.ColorManager;
 import me.luzhuo.lib_picture_select.R;
+import me.luzhuo.lib_picture_select.adapter.PictureSelectAdapter;
 
 /**
  * 相册选择的底部
  */
 public class PictureSelectBottomBar extends RelativeLayout implements View.OnClickListener {
-    private TextView picture_select_preview;
-    private CheckBox picture_select_origin;
+    private final TextView picture_select_preview;
+    private final CheckBox picture_select_origin;
     private final ColorManager color = new ColorManager();
     @Nullable
     private PictureSelectBottomListener listener;
-    /**
-     * 相册被选中的数量, 有相册被选中之后, 才能进行预览操作
-     */
-    private int selectCount = 0;
     
     public PictureSelectBottomBar(Context context) {
         super(context);
@@ -48,27 +45,25 @@ public class PictureSelectBottomBar extends RelativeLayout implements View.OnCli
 
         picture_select_preview.setOnClickListener(this);
 
-        previewButtonStyle();
+        updatePreviewButton();
     }
 
-    private void previewButtonStyle() {
-        if (selectCount > 0) {
+    public int getSelectCount() {
+        return PictureSelectAdapter.selectCount;
+    }
+
+    public int getMaxCount() {
+        return PictureSelectAdapter.maxCount;
+    }
+
+    public void updatePreviewButton() {
+        if (getSelectCount() > 0) {
             picture_select_preview.setTextColor(color.getColor(R.color.picture_select_complete_text));
-            picture_select_preview.setText(String.format(Locale.CHINESE, "预览(%d)", selectCount));
+            picture_select_preview.setText(String.format(Locale.CHINESE, "预览(%d)", getSelectCount()));
         } else {
             picture_select_preview.setTextColor(color.getColor(R.color.picture_select_preview_text_default));
             picture_select_preview.setText("预览");
         }
-    }
-
-    /**
-     * 设置预览按钮状态
-     * @param isSelected true有图片被选中, false没有图片被选中
-     */
-    public void setPreviewButton(boolean isSelected) {
-        if (isSelected) selectCount++;
-        else selectCount--;
-        previewButtonStyle();
     }
 
     public boolean isOrigin() {
@@ -86,7 +81,7 @@ public class PictureSelectBottomBar extends RelativeLayout implements View.OnCli
     @Override
     public void onClick(View v) {
         if (v == picture_select_preview) {
-            if (listener != null && selectCount > 0) listener.onPreview();
+            if (listener != null && getSelectCount() > 0) listener.onPreview();
         }
     }
 

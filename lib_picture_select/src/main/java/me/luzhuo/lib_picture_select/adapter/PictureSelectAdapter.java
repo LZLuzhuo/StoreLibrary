@@ -51,6 +51,7 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
     public PictureSelectAdapter(int fileType, int maxCount, boolean isShowCamera) {
         this.fileType = fileType;
+        this.selectCount = 0;
         this.maxCount = maxCount;
         this.isShowCamera = isShowCamera;
         this.isSingleReturn = maxCount <= 1;

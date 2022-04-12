@@ -2,18 +2,15 @@ package me.luzhuo.lib_picture_select;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.util.Pair;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -21,9 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -130,6 +125,9 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
         adapter = new PictureSelectAdapter(fileType, maxCount, isShowCamera);
         picture_select_rec.setAdapter(adapter);
         adapter.setPictureSelectListener(this);
+
+        picture_select_header.updateCompleteButton();
+        picture_select_bottom.updatePreviewButton();
     }
 
     private void initData() {
@@ -207,14 +205,14 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
     public void onSelect(boolean isSingle, FileBean file) {
         if (isSingle) onCompleteButton();
         else {
-            picture_select_header.setCompleteButton(file.isChecked, maxCount);
-            picture_select_bottom.setPreviewButton(file.isChecked);
+            picture_select_header.updateCompleteButton();
+            picture_select_bottom.updatePreviewButton();
         }
     }
 
     @Override
     public void onShow(FileBean file, int index, List<FileBean> files) {
-        PictureSelectPreviewActivity.start(this, index, files, picture_select_header.getBucket(DefaultBucketId).files, picture_select_header.getSelectCount(), maxCount, previewListener);
+        PictureSelectPreviewActivity.start(this, index, files, picture_select_header.getBucket(DefaultBucketId).files, previewListener);
     }
 
     @Override
@@ -247,9 +245,9 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
         picture_select_header.addFile2Bucket(fileBean);
         picture_select_header.updateBucket(picture_select_header.currentBucketId);
 
-        picture_select_header.setCompleteButton(true, maxCount);
-        picture_select_bottom.setPreviewButton(true);
         adapter.setSelected(true);
+        picture_select_header.updateCompleteButton();
+        picture_select_bottom.updatePreviewButton();
 
         // 单选
         if (maxCount <= 1) onCompleteButton();
@@ -303,16 +301,21 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
 
     @Override
     public void onPreview() {
-        PictureSelectPreviewActivity.start(this, 0, getSelectedFiles(), picture_select_header.getBucket(DefaultBucketId).files, picture_select_header.getSelectCount(), maxCount, previewListener);
+        PictureSelectPreviewActivity.start(this, 0, getSelectedFiles(), picture_select_header.getBucket(DefaultBucketId).files, previewListener);
     }
 
     private PictureSelectPreviewActivity.OnPictureSelectPreviewListener previewListener = new PictureSelectPreviewActivity.OnPictureSelectPreviewListener(){
         @Override
         public void onCheckedChanged(boolean isChecked) {
-            picture_select_header.setCompleteButton(isChecked, maxCount);
-            picture_select_bottom.setPreviewButton(isChecked);
             adapter.setSelected(isChecked);
             adapter.notifyDataSetChanged();
+            picture_select_header.updateCompleteButton();
+            picture_select_bottom.updatePreviewButton();
+        }
+
+        @Override
+        public void onComplete() {
+            onCompleteButton();
         }
     };
 }
