@@ -38,13 +38,13 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
     private List<FileBean> mDatas = new ArrayList<>();
     private static final int TYPE_CAMERA = 1, TYPE_PICTURE = 2;
     private int fileType;
-    private int maxCount;
     private boolean isShowCamera;
     private boolean isSingleReturn;
     private Context context;
     private PictureSelectAdapterListener listener;
     private ImageEngine imageEngine = GlideImageEngine.getInstance();
-    private int selectCount = 0;
+    public static int selectCount = 0;
+    public static int maxCount;
 
     public PictureSelectAdapter(int fileType) {
         this(fileType, Integer.MAX_VALUE, false);

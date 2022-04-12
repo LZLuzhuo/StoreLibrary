@@ -14,6 +14,7 @@ import androidx.transition.Slide;
 import androidx.transition.TransitionManager;
 import androidx.viewpager.widget.ViewPager;
 import me.luzhuo.lib_core.app.base.CoreBaseActivity;
+import me.luzhuo.lib_core.app.impl.OnPageChangeListenerImpl;
 import me.luzhuo.lib_core.ui.statusbar.StatusBarManager;
 import me.luzhuo.lib_file.bean.FileBean;
 import me.luzhuo.lib_picture_select.adapter.PictureSelectPreviewAdapter;
@@ -24,7 +25,7 @@ import me.luzhuo.lib_picture_select.ui.PictureSelectPreviewHeaderBar;
 /**
  * 相册的预览功能
  */
-public class PictureSelectPreviewActivity extends CoreBaseActivity implements PictureSelectPreviewCallback {
+public class PictureSelectPreviewActivity extends CoreBaseActivity implements PictureSelectPreviewCallback, PictureSelectPreviewBottomBar.OnPreviewBottomBarCallback {
     private static final String TAG = PictureSelectPreviewActivity.class.getSimpleName();
 
     /**
@@ -36,7 +37,7 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
      */
     private static List<FileBean> allFiles;
     @Nullable
-    private static PictureSelectPreviewListener listener;
+    private static OnPictureSelectPreviewListener listener;
     private int index;
     private int selectCount;
     private int maxCount;
@@ -46,8 +47,9 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
     private PictureSelectPreviewBottomBar preview_bottom;
 
     private PictureSelectPreviewAdapter pictureSelectPreviewAdapter;
+    private FileBean currentFileData;
 
-    public static void start(Context context, int index, List<FileBean> currentBucketFiles, List<FileBean> allFiles, int selectCount, int maxCount, PictureSelectPreviewListener listener) {
+    public static void start(Context context, int index, List<FileBean> currentBucketFiles, List<FileBean> allFiles, int selectCount, int maxCount, OnPictureSelectPreviewListener listener) {
         PictureSelectPreviewActivity.currentBucketFiles = currentBucketFiles;
         PictureSelectPreviewActivity.allFiles = allFiles;
         PictureSelectPreviewActivity.listener = listener;
@@ -76,14 +78,28 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
         preview_header = findViewById(R.id.picture_select_preview_header);
         preview_bottom = findViewById(R.id.picture_select_preview_bottom);
 
+        preview_bottom.setOnPreviewBottomBarListener(this);
+
         pictureSelectPreviewAdapter = new PictureSelectPreviewAdapter(this, currentBucketFiles);
         preview_viewpager.setAdapter(pictureSelectPreviewAdapter);
         pictureSelectPreviewAdapter.setOnPictureSelectPreviewCallback(this);
+        preview_viewpager.addOnPageChangeListener(new OnPageChangeListenerImpl() {
+            @Override
+            public void onPageSelected(int position) {
+                preview_header.setCurrentIndex(position, currentBucketFiles.size());
+                updateFileBean(currentBucketFiles.get(position));
+            }
+        });
+        preview_viewpager.setCurrentItem(index);
 
     }
 
     private void initData() {
-        preview_bottom.setDatas(getCurrentSelectFiles(allFiles));
+        List<FileBean> currentSelectFiles = getCurrentSelectFiles(allFiles);
+        preview_bottom.setSelectPreviewDatas(currentSelectFiles);
+        preview_header.setCompleteButton(currentSelectFiles.size(), maxCount);
+        preview_header.setCurrentIndex(index, currentBucketFiles.size());
+        updateFileBean(currentBucketFiles.get(index));
     }
 
     private List<FileBean> getCurrentSelectFiles(List<FileBean> fileBeans) {
@@ -123,7 +139,25 @@ public class PictureSelectPreviewActivity extends CoreBaseActivity implements Pi
         return slide;
     }
 
-    public interface PictureSelectPreviewListener {
+    /**
+     * 更新文件相关的界面
+     * 1. 是否选中
+     */
+    private void updateFileBean(FileBean data) {
+        this.currentFileData = data;
+        preview_bottom.checkSelect(data.isChecked);
+        // TODO
+    }
 
+    @Override
+    public void onCheckedChanged(boolean isChecked) {
+        this.currentFileData.isChecked = isChecked;
+        if (listener != null) listener.onCheckedChanged(isChecked);
+
+        preview_header.setCompleteButton(isChecked, maxCount);
+    }
+
+    public interface OnPictureSelectPreviewListener {
+        public void onCheckedChanged(boolean isChecked);
     }
 }

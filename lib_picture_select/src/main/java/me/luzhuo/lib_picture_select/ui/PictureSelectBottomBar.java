@@ -86,7 +86,7 @@ public class PictureSelectBottomBar extends RelativeLayout implements View.OnCli
     @Override
     public void onClick(View v) {
         if (v == picture_select_preview) {
-            if (listener != null) listener.onPreview();
+            if (listener != null && selectCount > 0) listener.onPreview();
         }
     }
 

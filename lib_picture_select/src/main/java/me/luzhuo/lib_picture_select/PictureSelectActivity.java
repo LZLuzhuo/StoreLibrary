@@ -58,7 +58,6 @@ import static me.luzhuo.lib_picture_select.ui.PictureSelectHeaderBar.DefaultBuck
  * 图片选择的Activity界面
  */
 public class PictureSelectActivity extends CoreBaseActivity implements PictureSelectAdapterListener, ICameraCallback, IVideoRecorderCallback, IAudioCallback, PictureSelectHeaderBar.PictureSelectHeaderListener, PictureSelectBottomBar.PictureSelectBottomListener {
-    private static final String TAG = PictureSelectActivity.class.getSimpleName();
     private RecyclerView picture_select_rec;
     private PictureSelectHeaderBar picture_select_header;
     private PictureSelectBottomBar picture_select_bottom;
@@ -307,7 +306,13 @@ public class PictureSelectActivity extends CoreBaseActivity implements PictureSe
         PictureSelectPreviewActivity.start(this, 0, getSelectedFiles(), picture_select_header.getBucket(DefaultBucketId).files, picture_select_header.getSelectCount(), maxCount, previewListener);
     }
 
-    private PictureSelectPreviewActivity.PictureSelectPreviewListener previewListener = new PictureSelectPreviewActivity.PictureSelectPreviewListener(){
-
+    private PictureSelectPreviewActivity.OnPictureSelectPreviewListener previewListener = new PictureSelectPreviewActivity.OnPictureSelectPreviewListener(){
+        @Override
+        public void onCheckedChanged(boolean isChecked) {
+            picture_select_header.setCompleteButton(isChecked, maxCount);
+            picture_select_bottom.setPreviewButton(isChecked);
+            adapter.setSelected(isChecked);
+            adapter.notifyDataSetChanged();
+        }
     };
 }
