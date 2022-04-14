@@ -1,5 +1,6 @@
 package me.luzhuo.lib_picture_select_view.bean;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import me.luzhuo.lib_file.bean.CheckableFileBean;
 
@@ -14,6 +15,11 @@ public class VideoNetBean extends CheckableFileBean {
     public Object tag;
 
     public VideoNetBean(String netUrl) {
+        this.netUrl = netUrl;
+    }
+
+    public VideoNetBean(@Nullable String coverUrl, @NonNull String netUrl) {
+        this.coverUrl = coverUrl;
         this.netUrl = netUrl;
     }
 

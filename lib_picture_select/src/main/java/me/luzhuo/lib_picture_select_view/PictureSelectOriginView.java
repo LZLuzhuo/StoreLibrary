@@ -4,14 +4,19 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import me.luzhuo.lib_core.ui.toast.ToastManager;
+import me.luzhuo.lib_file.FileManager;
 import me.luzhuo.lib_file.bean.AudioFileBean;
 import me.luzhuo.lib_file.bean.CheckableFileBean;
 import me.luzhuo.lib_file.bean.FileBean;
@@ -20,6 +25,7 @@ import me.luzhuo.lib_file.bean.VideoFileBean;
 import me.luzhuo.lib_file.store.FileStore;
 import me.luzhuo.lib_picture_select.PictureSelectActivity;
 import me.luzhuo.lib_picture_select.PictureSelectListener;
+import me.luzhuo.lib_picture_select.PictureSelectUtils;
 import me.luzhuo.lib_picture_select.R;
 import me.luzhuo.lib_picture_select_view.adapter.OnPictureAdapterSelectListener;
 import me.luzhuo.lib_picture_select_view.adapter.PictureViewSelectAdapter;
@@ -29,6 +35,7 @@ import me.luzhuo.lib_picture_select_view.bean.ImageNetBean;
 import me.luzhuo.lib_picture_select_view.bean.VideoNetBean;
 import me.luzhuo.lib_picture_select_view.callback.PictureViewSelectCallback;
 import me.luzhuo.lib_picture_select_view.callback.PictureViewShowCallback;
+import me.luzhuo.lib_video.picture_select_view.PictureSelectVideoPlayerActivity;
 
 /**
  * 相册选择 (没有压缩功能)
@@ -48,6 +55,7 @@ public class PictureSelectOriginView extends RecyclerView implements OnPictureAd
     protected boolean action_select = false;
     protected boolean action_delete = false;
     protected boolean action_show = false;
+    protected boolean move = false;
 
     @Nullable
     protected PictureViewShowCallback callback;
@@ -82,6 +90,7 @@ public class PictureSelectOriginView extends RecyclerView implements OnPictureAd
             action_select = typedArray.getBoolean(R.styleable.PictureSelectView_picture_action_select, true);
             action_delete = typedArray.getBoolean(R.styleable.PictureSelectView_picture_action_delete, true);
             action_show = typedArray.getBoolean(R.styleable.PictureSelectView_picture_action_show, true);
+            move = typedArray.getBoolean(R.styleable.PictureSelectView_picture_move, false);
         } finally {
             typedArray.recycle();
         }
@@ -94,7 +103,48 @@ public class PictureSelectOriginView extends RecyclerView implements OnPictureAd
         adapter = getSelectAdapter();
         this.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
         this.setAdapter(adapter);
+
+        if (move) itemTouchHelper.attachToRecyclerView(this);
     }
+
+    private final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, 0) {
+        @Override
+        public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull ViewHolder viewHolder) {
+            if (viewHolder instanceof PictureViewSelectAdapter.RecyclerAddHolder) return makeMovementFlags(0, 0);
+            else return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0);
+        }
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull ViewHolder viewHolder, @NonNull ViewHolder target) {
+            int fromPosition = viewHolder.getAdapterPosition();
+            int toPosition = target.getAdapterPosition();
+            List<CheckableFileBean> datas = getOriginalDatas();
+
+            if (fromPosition >= datas.size() || toPosition >= datas.size()) return false;
+
+            if (fromPosition < toPosition) {
+                for (int i = fromPosition; i < toPosition; i++) {
+                    Collections.swap(datas, i, i + 1);
+                }
+            } else {
+                for (int i = fromPosition; i > toPosition; i--) {
+                    Collections.swap(datas, i, i - 1);
+                }
+            }
+
+            adapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+            return true;
+        }
+        @Override
+        public void onSwiped(@NonNull ViewHolder viewHolder, int direction) { }
+
+        @Override
+        public boolean canDropOver(@NonNull RecyclerView recyclerView, @NonNull ViewHolder current, @NonNull ViewHolder target) {
+            // return true为可替换的目标, return false为不可替换的目标
+            if (current instanceof PictureViewSelectAdapter.RecyclerAddHolder || target instanceof PictureViewSelectAdapter.RecyclerAddHolder) return false;
+            else return true;
+        }
+    });
 
     protected RecyclerView.Adapter<RecyclerView.ViewHolder> getSelectAdapter() {
         if (onlyShow) {
@@ -179,10 +229,22 @@ public class PictureSelectOriginView extends RecyclerView implements OnPictureAd
         }
 
         if (action_show) {
-            // TODO 显示文件详情
+            if (type == FileStore.TypeImage) {
+                PictureSelectUtils.imagePreview(getContext(), index, PictureSelectUtils.getOriginStringList(newFilterShowList));
+            } else if (type == FileStore.TypeVideo) {
+                if (bean instanceof VideoNetBean) {
+                    PictureSelectVideoPlayerActivity.start(getContext(), ((VideoNetBean)bean).coverUrl, ((VideoNetBean)bean).netUrl);
+                } else {
+                    if (new FileManager().needUri()) PictureSelectVideoPlayerActivity.start(getContext(), ((VideoFileBean)bean).uriPath);
+                    else PictureSelectVideoPlayerActivity.start(getContext(), new File(((VideoFileBean)bean).urlPath));
+                }
+            } else if (type == FileStore.TypeAudio) {
+                // TODO 不支持
+                ToastManager.show2(getContext(), "暂不支持音频播放");
+            } else throw new IllegalArgumentException("Picture展示时, 数据类型不匹配");
         }
 
-        if (callback != null) {
+        if (callback != null && !action_show) {
             if (type == FileStore.TypeImage) callback.onImageShowCallback(bean, index, newFilterShowList);
             else if (type == FileStore.TypeVideo) callback.onVideoShowCallback(bean, index, newFilterShowList);
             else if (type == FileStore.TypeAudio) callback.onAudioShowCallback(bean, index, newFilterShowList);

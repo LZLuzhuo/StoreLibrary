@@ -30,14 +30,17 @@ android {
 dependencies {
 
     // implementation project(path: ':lib_file')
-    api 'me.luzhuo.android:lib_core:2.3.36-SNAPSHOT'
-    compileOnly 'androidx.constraintlayout:constraintlayout:2.0.4'
-
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
-    implementation 'me.luzhuo.android:lib_file:1.1.12-SNAPSHOT'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
+    implementation 'me.luzhuo.android:lib_file:1.1.13-SNAPSHOT'
+    implementation 'me.luzhuo.android:lib_core:2.3.44-SNAPSHOT'
     implementation 'me.luzhuo.android:lib_permission:1.1.4-SNAPSHOT'
-    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    implementation 'me.luzhuo.android:lib_video:1.0.12-SNAPSHOT'
+    implementation 'me.luzhuo.android:lib_image_compress:1.0.7-SNAPSHOT'
+
     implementation 'me.luzhuo.android:library_photoview:1.0.1-SNAPSHOT'
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    implementation 'com.github.SherlockGougou:BigImageViewPager:androidx-6.2.1'
 }

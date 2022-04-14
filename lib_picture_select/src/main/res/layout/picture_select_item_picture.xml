@@ -37,10 +37,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_margin="8dp"
-                android:background="@drawable/picture_select_checkbox_selector"
-                android:gravity="center"
-                android:textColor="@color/core_colorForeground"
-                android:textSize="12sp" />
+                android:background="@drawable/picture_select_checkbox_selector" />
 
             <!-- picture_select_pic_check 点击区域 -->
             <View

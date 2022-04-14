@@ -33,12 +33,12 @@ public class GlideImageEngine implements GridImageEngine, ImageEngine {
 
     @Override
     public void loadGridVideoCover(@NonNull Context context, @NonNull String url, @NonNull ImageView imageView) {
-        Glide.with(context).asBitmap().load(url).override(300, 300).centerCrop().placeholder(R.mipmap.picture_select_icon_video).into(imageView);
+        Glide.with(context).asBitmap().load(url).override(600, 600).centerCrop().placeholder(R.mipmap.picture_select_icon_video).into(imageView);
     }
 
     @Override
     public void loadGridVideoCover(@NonNull Context context, @NonNull Uri uri, @NonNull ImageView imageView) {
-        Glide.with(context).asBitmap().load(uri).override(300, 300).centerCrop().placeholder(R.mipmap.picture_select_icon_video).into(imageView);
+        Glide.with(context).asBitmap().load(uri).override(600, 600).centerCrop().placeholder(R.mipmap.picture_select_icon_video).into(imageView);
     }
 
     @Override
@@ -74,5 +74,15 @@ public class GlideImageEngine implements GridImageEngine, ImageEngine {
     @Override
     public void loadGif(@NonNull Context context, @NonNull String url, @NonNull ImageView imageView) {
         Glide.with(context).asGif().load(url).into(imageView);
+    }
+
+    @Override
+    public void loadVideoCover(@NonNull Context context, @NonNull Uri uri, @NonNull ImageView imageView) {
+        Glide.with(context).asBitmap().load(uri).override(600, 600).placeholder(R.mipmap.picture_select_icon_video).into(imageView);
+    }
+
+    @Override
+    public void loadVideoCover(@NonNull Context context, @NonNull String url, @NonNull ImageView imageView) {
+        Glide.with(context).asBitmap().load(url).override(600, 600).placeholder(R.mipmap.picture_select_icon_video).into(imageView);
     }
 }

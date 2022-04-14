@@ -1,14 +1,34 @@
 package me.luzhuo.lib_picture_select;
 
+import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.Nullable;
+import cc.shinichi.library.ImagePreview;
+import me.luzhuo.lib_core.app.base.CoreBaseApplication;
+import me.luzhuo.lib_core.data.hashcode.HashManager;
+import me.luzhuo.lib_file.FileManager;
 import me.luzhuo.lib_file.bean.AudioFileBean;
+import me.luzhuo.lib_file.bean.CheckableFileBean;
+import me.luzhuo.lib_file.bean.FileBean;
+import me.luzhuo.lib_file.bean.ImageFileBean;
+import me.luzhuo.lib_file.bean.VideoFileBean;
 import me.luzhuo.lib_file.enums.FileType;
+import me.luzhuo.lib_picture_compress.bean.AudioCompressBean;
+import me.luzhuo.lib_picture_compress.bean.ImageCompressBean;
+import me.luzhuo.lib_picture_compress.bean.VideoCompressBean;
+import me.luzhuo.lib_picture_select_view.bean.AudioNetBean;
+import me.luzhuo.lib_picture_select_view.bean.ImageNetBean;
+import me.luzhuo.lib_picture_select_view.bean.VideoNetBean;
 
 public class PictureSelectUtils {
 
@@ -52,5 +72,67 @@ public class PictureSelectUtils {
         }
         cursor.close();
         return null;
+    }
+
+    /**
+     * AndroidQ+ 将其移到私有目录
+     * @return true移动成功, false移动失败
+     */
+    public static boolean checkCopyFile(FileBean fileBean) {
+        String copyFileUrl;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try {
+                String outPath = new FileManager().getCacheDirectory().getAbsolutePath() + File.separator + HashManager.getInstance().getUuid(fileBean.uriPath.toString());
+                new FileManager().Stream2File(CoreBaseApplication.appContext.getContentResolver().openInputStream(fileBean.uriPath), outPath);
+                copyFileUrl = outPath;
+            } catch (Exception var3) {
+                var3.printStackTrace();
+                return false;
+            }
+        } else {
+            copyFileUrl = fileBean.urlPath;
+        }
+
+        if (fileBean instanceof ImageCompressBean) ((ImageCompressBean) fileBean).compressPath = copyFileUrl;
+        else if (fileBean instanceof VideoCompressBean) ((VideoCompressBean) fileBean).compressPath = copyFileUrl;
+        else if (fileBean instanceof AudioCompressBean) ((AudioCompressBean) fileBean).compressPath = copyFileUrl;
+        return true;
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private static final FileManager fileManager = new FileManager();
+
+    public static List<String> getOriginStringList(List<CheckableFileBean> fileBeans) {
+        List<String> lists = new ArrayList<>();
+        for (CheckableFileBean data : fileBeans) {
+            if (data instanceof AudioNetBean) lists.add(((AudioNetBean) data).netUrl);
+            else if (data instanceof VideoNetBean) lists.add(((VideoNetBean) data).netUrl);
+            else if (data instanceof ImageNetBean) lists.add(((ImageNetBean) data).netUrl);
+            else if (data instanceof AudioFileBean) {
+                if (fileManager.needUri()) lists.add(((AudioFileBean) data).uriPath.toString());
+                else lists.add(((AudioFileBean) data).urlPath);
+            } else if (data instanceof VideoFileBean) {
+                if (fileManager.needUri()) lists.add(((VideoFileBean) data).uriPath.toString());
+                else lists.add(((VideoFileBean) data).urlPath);
+            } else if (data instanceof ImageFileBean) {
+                if (fileManager.needUri()) lists.add(((ImageFileBean) data).uriPath.toString());
+                else lists.add(((ImageFileBean) data).urlPath);
+            }
+        }
+        return lists;
+    }
+
+    public static void imagePreview(Context context, int index, List<String> fileBeans) {
+        ImagePreview
+                .getInstance()
+                .setContext(context)
+                .setIndex(index)
+                .setImageList(fileBeans)
+                .setEnableClickClose(true)
+                .setEnableDragClose(true)
+                .setEnableUpDragClose(true)
+                .setShowDownButton(false)
+                .setEnableDragCloseIgnoreScale(true)
+                .start();
     }
 }

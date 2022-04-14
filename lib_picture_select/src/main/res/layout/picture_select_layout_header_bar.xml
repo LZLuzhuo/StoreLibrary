@@ -13,7 +13,7 @@
         android:padding="15dp"
         android:src="@mipmap/picture_select_icon_close" />
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/picture_select_bucket_select"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,13 +26,20 @@
             android:id="@+id/picture_select_bucket_select_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableRight="@mipmap/picture_select_icon_down"
-            android:drawablePadding="5dp"
             android:gravity="center_vertical"
             android:textColor="@color/core_colorForeground"
             android:textSize="16sp"
             android:text="所有相册" />
-    </RelativeLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/picture_select_bucket_select_orientation"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@mipmap/picture_select_icon_down" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/picture_select_complete"

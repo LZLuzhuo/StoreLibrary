@@ -80,6 +80,7 @@ public class PictureSelectView extends PictureSelectOriginView {
         @Override
         public void run() {
             boolean compress = compressFile.compress();
+            if (!compress) compressFile.checkCopyFile();
             if (compress) Log.e(TAG, "压缩成功: " + compressFile);
             else Log.e(TAG, "压缩失败: " + compressFile);
         }

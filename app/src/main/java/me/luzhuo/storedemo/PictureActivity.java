@@ -1,22 +1,21 @@
 package me.luzhuo.storedemo;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import me.luzhuo.lib_core.ui.toast.ToastManager;
-import me.luzhuo.lib_file.bean.AudioFileBean;
 import me.luzhuo.lib_file.bean.CheckableFileBean;
 import me.luzhuo.lib_file.bean.ImageFileBean;
 import me.luzhuo.lib_picture_compress.PictureSelectView;
-import me.luzhuo.lib_picture_select.PictureSelectUtils;
-import me.luzhuo.lib_picture_select_view.PictureSelectOriginView;
+import me.luzhuo.lib_picture_select_view.bean.ImageNetBean;
+import me.luzhuo.lib_picture_select_view.bean.VideoNetBean;
 import me.luzhuo.lib_picture_select_view.callback.PictureViewSelectCallback;
 
 public class PictureActivity extends AppCompatActivity {
@@ -63,6 +62,11 @@ public class PictureActivity extends AppCompatActivity {
                 Log.e(TAG, "" + audioFileBeans);
             }
         });
+        List<CheckableFileBean> images = new ArrayList<>();
+        images.add(new ImageNetBean("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fattach.bbs.miui.com%2Fforum%2F201311%2F01%2F215828tpmddz2d2bfcz5pk.jpg&refer=http%3A%2F%2Fattach.bbs.miui.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1619197782&t=8ec66be3937ab86f0e7edab59df271ca"));
+        images.add(new ImageNetBean("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fattach.bbs.miui.com%2Fforum%2F201410%2F25%2F220832wlwzqq6ble9ql6rd.jpg&refer=http%3A%2F%2Fattach.bbs.miui.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1619197782&t=0631fd64899882e134049c4631e2eef8"));
+        images.add(new VideoNetBean(null, "https://vd3.bdstatic.com/mda-khtuhgzs96xrn7sa/mda-khtuhgzs96xrn7sa.mp4?v_from_s=sz_videoui_4135&auth_key=1616607729-0-0-c8772210059111f2e9738b9eaa2b2138&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000156_3"));
+        picture_select.addDatas(images);
     }
 
     private boolean notSupport(List<? extends CheckableFileBean> fileBeans) {
@@ -81,13 +85,10 @@ public class PictureActivity extends AppCompatActivity {
     }
 
     public void ok(View view) {
-        /*List<CheckableFileBean> datas = picture_select.getDatas();
+        List<CheckableFileBean> datas = picture_select.getDatas();
         Log.e(TAG, "size: " + datas.size());
         for (CheckableFileBean data : datas) {
             Log.e(TAG, "data: " + data);
-        }*/
-
-        AudioFileBean audioFileBean = PictureSelectUtils.queryAudioByUri(this, Uri.parse("content://media/external/audio/media/8573"));
-        Log.e(TAG, "" + audioFileBean);
+        }
     }
 }

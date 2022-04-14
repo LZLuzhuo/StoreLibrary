@@ -23,9 +23,21 @@ public interface CompressState {
     public static final int CompressStateEnded = 1 << 3;
 
     /**
+     * 压缩失败
+     */
+    public static final int CompressStateError = 1 << 4;
+
+    /**
      * 压缩
      * @return true压缩成功, false压缩失败
      */
     @WorkerThread
     public boolean compress();
+
+    /**
+     * AndroidQ+ 将其移到私有目录
+     * @return true移动成功, false移动失败
+     */
+    @WorkerThread
+    public boolean checkCopyFile();
 }

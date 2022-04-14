@@ -3,6 +3,7 @@ package me.luzhuo.lib_picture_compress.bean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import me.luzhuo.lib_file.bean.AudioFileBean;
+import me.luzhuo.lib_picture_select.PictureSelectUtils;
 
 public class AudioCompressBean extends AudioFileBean implements CompressState{
 
@@ -23,9 +24,17 @@ public class AudioCompressBean extends AudioFileBean implements CompressState{
 
     @Override
     public boolean compress() {
+        if (isOrigin) return false;
         this.compressState.set(CompressState.CompressStateCompressing);
+
         // TODO 压缩音频
+        this.compressState.set(CompressState.CompressStateError);
         return false;
+    }
+
+    @Override
+    public boolean checkCopyFile() {
+        return PictureSelectUtils.checkCopyFile(this);
     }
 
     @Override

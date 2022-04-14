@@ -3,6 +3,8 @@ package me.luzhuo.lib_picture_compress.bean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import me.luzhuo.lib_file.bean.ImageFileBean;
+import me.luzhuo.lib_image_compress.ImageCompress;
+import me.luzhuo.lib_picture_select.PictureSelectUtils;
 
 public class ImageCompressBean extends ImageFileBean implements CompressState {
 
@@ -23,9 +25,22 @@ public class ImageCompressBean extends ImageFileBean implements CompressState {
 
     @Override
     public boolean compress() {
+        if (isOrigin) return false;
         this.compressState.set(CompressState.CompressStateCompressing);
-        // TODO 压缩图片
-        return true;
+
+        compressPath = new ImageCompress().compress(this);
+        if (compressPath != null) {
+            this.compressState.set(CompressState.CompressStateEnded);
+            return true;
+        } else {
+            this.compressState.set(CompressState.CompressStateError);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean checkCopyFile() {
+        return PictureSelectUtils.checkCopyFile(this);
     }
 
     @Override

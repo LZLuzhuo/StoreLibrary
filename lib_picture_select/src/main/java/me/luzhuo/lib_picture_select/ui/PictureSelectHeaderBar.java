@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -16,21 +17,23 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import me.luzhuo.lib_core.app.color.ColorManager;
+import me.luzhuo.lib_core.ui.animation.AnimationManager;
 import me.luzhuo.lib_file.bean.FileBean;
 import me.luzhuo.lib_picture_select.R;
-import me.luzhuo.lib_picture_select.adapter.HeaderBucketPopAdapter;
 import me.luzhuo.lib_picture_select.adapter.PictureSelectAdapter;
 import me.luzhuo.lib_picture_select.bean.PictureGroup;
 
 /**
  * 相册选择的头部
  */
-public class PictureSelectHeaderBar extends RelativeLayout implements View.OnClickListener, HeaderBucketPopAdapter.OnBucketPopCallback {
+public class PictureSelectHeaderBar extends RelativeLayout implements View.OnClickListener {
     private final TextView select_complete;
     private final View bucket_select;
     private final TextView bucket_select_name;
+    private final ImageView bucket_select_orientation;
     private final View select_close;
     private final ColorManager color = new ColorManager();
+    private final AnimationManager animation = new AnimationManager();
     @Nullable
     private PictureSelectHeaderListener listener;
 
@@ -45,8 +48,6 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
     public final static long DefaultBucketId = 0L;
     public final static String DefaultBucketName = "所有相册";
     public long currentBucketId = DefaultBucketId;
-
-    private HeaderBucketPopWindow bucketPop;
 
     public PictureSelectHeaderBar(Context context) {
         super(context);
@@ -65,15 +66,12 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
         select_complete = findViewById(R.id.picture_select_complete);
         bucket_select = findViewById(R.id.picture_select_bucket_select);
         bucket_select_name = findViewById(R.id.picture_select_bucket_select_name);
+        bucket_select_orientation = findViewById(R.id.picture_select_bucket_select_orientation);
         select_close = findViewById(R.id.picture_select_close);
 
         select_complete.setOnClickListener(this);
         bucket_select.setOnClickListener(this);
         select_close.setOnClickListener(this);
-
-        bucketPop = new HeaderBucketPopWindow(getContext());
-        bucketPop.setAnchorView(this);
-        bucketPop.setOnBucketPopCallback(this);
 
         updateCompleteButton();
     }
@@ -113,16 +111,15 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
         if (v == select_complete) {
             if (getSelectCount() > 0 && listener != null) listener.onCompleteButton();
         } else if (v == bucket_select) {
-            bucketPop.setDatas(pictureBucket);
-            bucketPop.show(currentBucketId);
+            if (listener != null) listener.openBucketView(currentBucketId, pictureBucket);
         } else if (v == select_close) {
             if (listener != null) listener.onClose();
         }
     }
 
-    @Override
-    public void onBucketSelect(long bucket) {
-        updateBucket(bucket);
+    // 旋转箭头
+    public void rotateArrow() {
+        animation.rotateArrow(bucket_select_orientation);
     }
 
     /**
@@ -150,10 +147,11 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
     public void updateBucket(long bucketId) {
         this.currentBucketId = bucketId;
         PictureGroup pictureGroup = pictureBucket.get(currentBucketId);
+        if (pictureGroup == null) return;
+
         bucket_select_name.setText(pictureGroup.bucketName);
         if (listener != null) {
-            if (pictureGroup != null) listener.onSwitchBucket(pictureGroup.files);
-            else listener.onSwitchBucket(null);
+            listener.onSwitchBucket(pictureGroup.files);
         }
     }
 
@@ -196,6 +194,11 @@ public class PictureSelectHeaderBar extends RelativeLayout implements View.OnCli
          * 关闭
          */
         public void onClose();
+
+        /**
+         * 打开相册组
+         */
+        public void openBucketView(long currentBucketId, Map<Long, PictureGroup> pictureBucket);
     }
 
     public void setOnPictureSelectHeaderListener(@Nullable PictureSelectHeaderListener listener) {

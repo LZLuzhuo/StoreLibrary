@@ -33,17 +33,16 @@ import me.luzhuo.lib_file.store.FileStore;
 import me.luzhuo.lib_picture_select.R;
 import me.luzhuo.lib_picture_select.engine.GlideImageEngine;
 import me.luzhuo.lib_picture_select.engine.GridImageEngine;
-import me.luzhuo.lib_picture_select.engine.ImageEngine;
 
 public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<FileBean> mDatas = new ArrayList<>();
+    private final List<FileBean> mDatas = new ArrayList<>();
     private static final int TYPE_CAMERA = 1, TYPE_PICTURE = 2;
-    private int fileType;
-    private boolean isShowCamera;
-    private boolean isSingleReturn;
+    private final int fileType;
+    private final boolean isShowCamera;
+    private final boolean isSingleReturn;
     private Context context;
     private PictureSelectAdapterListener listener;
-    private GridImageEngine imageEngine = GlideImageEngine.getInstance();
+    private final GridImageEngine imageEngine = GlideImageEngine.getInstance();
     public static int selectCount = 0;
     public static int maxCount;
 
@@ -235,15 +234,6 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
                 return;
             }
 
-            // Glide 未加载完成时, 进行exists判断会造成系统ANR
-            /*boolean isExists;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) isExists = fileManager.exists(data.uriPath);
-            else isExists = fileManager.exists(data.urlPath);
-            if (!isExists) {
-                toastFileError();
-                return;
-            }*/
-
             if (isSelected) {
                 setSelected(false);
                 data.isChecked = false;
@@ -320,16 +310,6 @@ public class PictureSelectAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             Dialog.instance().show(context, "注意", content.toString(), "确定", null, true, null, null);
         }
-
-        /**
-         * 文件损坏的提示信息
-         */
-        /*private void toastFileError() {
-            if (fileType == FileStore.TypeImage || fileType == FileStore.TypeGif || fileType == FileStore.TypeImage + FileStore.TypeGif) ToastManager.show(context, "图片已损坏!");
-            else if (fileType == FileStore.TypeVideo) ToastManager.show(context, "视频已损坏!");
-            else if (fileType == FileStore.TypeAudio) ToastManager.show(context, "音频已损坏!");
-            else ToastManager.show(context, "文件已损坏!");
-        }*/
 
         /**
          * 选中/取消选中 图片时, 图片的放大/缩放效果

@@ -21,6 +21,7 @@ import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -40,7 +41,6 @@ import java.util.UUID;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import me.luzhuo.lib_core.app.base.CoreBaseApplication;
-import me.luzhuo.lib_core.data.DataCheck;
 
 import static android.os.Environment.MEDIA_MOUNTED;
 
@@ -146,7 +146,7 @@ public class FileManager {
         if (isUriForFile(path)) {
             try {
                 Uri pathUri = Uri.parse(path);
-                String savePath = context.getExternalCacheDir() + File.separator + UUID.randomUUID().toString().replace("-", "");
+                String savePath = getCacheDirectory() + File.separator + UUID.randomUUID().toString().replace("-", "");
                 InputStream inputStream = context.getContentResolver().openInputStream(pathUri);
 
                 Stream2File(inputStream, savePath);
@@ -469,5 +469,14 @@ public class FileManager {
     public boolean isUriForFile(@Nullable String url) {
         if (TextUtils.isEmpty(url)) return false;
         return url.startsWith("content://");
+    }
+
+    /**
+     * 是否强制使用Uri模式
+     * 系统版本 >= Android Q 时, 系统会强制要求使用Uri模式
+     */
+    public boolean needUri() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) return true;
+        else return false;
     }
 }

@@ -1,7 +1,5 @@
 package me.luzhuo.lib_picture_select.adapter;
 
-import android.util.Log;
-
 import java.util.List;
 
 import androidx.fragment.app.Fragment;
@@ -19,7 +17,7 @@ import me.luzhuo.lib_picture_select.fragments.PictureSelectPreviewImageFragment;
 import me.luzhuo.lib_picture_select.fragments.PictureSelectPreviewVideoFragment;
 
 public class PictureSelectPreviewAdapter extends FragmentPagerAdapter {
-    private List<FileBean> fileBeans;
+    private final List<FileBean> fileBeans;
     private PictureSelectPreviewCallback callback;
 
     public PictureSelectPreviewAdapter(FragmentActivity activity, List<FileBean> fileBeans) {
@@ -34,8 +32,8 @@ public class PictureSelectPreviewAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         FileBean data = fileBeans.get(position);
-        if (data instanceof ImageFileBean && !data.mimeType.equalsIgnoreCase("image/gif")) return PictureSelectPreviewImageFragment.instance(data).setOnPictureSelectPreviewCallback(callback);
-        else if (data instanceof ImageFileBean && data.mimeType.equalsIgnoreCase("image/gif")) return PictureSelectPreviewGifFragment.instance(data).setOnPictureSelectPreviewCallback(callback);
+        if (data instanceof ImageFileBean && !isGif(data.mimeType)) return PictureSelectPreviewImageFragment.instance(data).setOnPictureSelectPreviewCallback(callback);
+        else if (data instanceof ImageFileBean && isGif(data.mimeType)) return PictureSelectPreviewGifFragment.instance(data).setOnPictureSelectPreviewCallback(callback);
         else if (data instanceof VideoFileBean) return PictureSelectPreviewVideoFragment.instance(data).setOnPictureSelectPreviewCallback(callback);
         else if (data instanceof AudioFileBean) return PictureSelectPreviewAudioFragment.instance(data).setOnPictureSelectPreviewCallback(callback);
         else return PictureSelectPreviewFileFragment.instance(data).setOnPictureSelectPreviewCallback(callback);
@@ -44,5 +42,9 @@ public class PictureSelectPreviewAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         return fileBeans == null ? 0 : fileBeans.size();
+    }
+
+    private boolean isGif(String mimeType) {
+        return mimeType.equalsIgnoreCase("image/gif");
     }
 }

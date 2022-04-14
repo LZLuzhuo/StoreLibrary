@@ -1,5 +1,7 @@
 package me.luzhuo.lib_picture_select.fragments;
 
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.github.chrisbanes.photoview.PhotoView;
+
+import java.io.File;
 
 import androidx.annotation.Nullable;
 import me.luzhuo.lib_core.app.base.CoreBaseFragment;
@@ -44,7 +48,8 @@ public class PictureSelectPreviewImageFragment extends CoreBaseFragment implemen
     public void initData(Bundle bundle) {
         PhotoView preview_photoview = getView().findViewById(R.id.picture_select_preview_photoview);
         preview_photoview.setScaleType(ImageView.ScaleType.CENTER);
-        preview_photoview.setImageURI(data.uriPath);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) preview_photoview.setImageURI(data.uriPath);
+        else preview_photoview.setImageURI(Uri.fromFile(new File(data.urlPath)));
         preview_photoview.getAttacher().setOnClickListener(this);
     }
 
