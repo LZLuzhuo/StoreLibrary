@@ -24,7 +24,7 @@
             android:layout_centerVertical="true"
             android:padding="15dp"
             android:rotation="180"
-            android:src="@mipmap/core_icon_right_menu_close" />
+            android:src="@mipmap/picture_select_icon_close" />
 
         <TextView
             android:id="@+id/picture_select_number"

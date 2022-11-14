@@ -42,19 +42,7 @@ public class VideoCompressBean extends VideoFileBean implements CompressState {
         return "VideoCompressBean{" +
                 "compressPath='" + compressPath + '\'' +
                 ", compressState=" + compressState +
-                ", width=" + width +
-                ", height=" + height +
-                ", duration=" + duration +
-                ", id=" + id +
-                ", fileName='" + fileName + '\'' +
-                ", mimeType='" + mimeType + '\'' +
-                ", uriPath=" + uriPath +
-                ", urlPath='" + urlPath + '\'' +
-                ", bucketId=" + bucketId +
-                ", bucketName='" + bucketName + '\'' +
-                ", size=" + size +
-                ", addedDate=" + addedDate +
-                ", isOrigin=" + isOrigin +
+                ", " + super.toString() +
                 '}';
     }
 }

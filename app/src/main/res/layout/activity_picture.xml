@@ -12,7 +12,7 @@
         android:text="确定"
         android:onClick="ok"/>
 
-    <me.luzhuo.lib_picture_compress.PictureSelectView
+    <me.luzhuo.storedemo.picture.PictureSelectView
         android:id="@+id/picture_select"
         app:picture_flags="Images|Gif|Audio|Videos"
         app:picture_action_select="true"

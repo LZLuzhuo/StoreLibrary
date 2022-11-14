@@ -1,10 +1,7 @@
 package me.luzhuo.lib_picture_compress;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,20 +26,18 @@ import me.luzhuo.lib_picture_select_view.adapter.PictureViewShowAdapter;
 /**
  * 相册选择 (具有压缩功能)
  */
-public class PictureSelectView extends PictureSelectOriginView {
-    private static final String TAG = PictureSelectView.class.getSimpleName();
+public class PictureSelectCompressView extends PictureSelectOriginView {
     private final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-    private final static Handler mainThread = new Handler(Looper.getMainLooper());
 
-    public PictureSelectView(@NonNull Context context) {
+    public PictureSelectCompressView(@NonNull Context context) {
         super(context);
     }
 
-    public PictureSelectView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public PictureSelectCompressView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public PictureSelectView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public PictureSelectCompressView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -67,22 +62,27 @@ public class PictureSelectView extends PictureSelectOriginView {
 
             // compress files
             for (CheckableFileBean compressFile : compressFiles) {
-                if (compressFile instanceof CompressState) threadPool.execute(new CompressRunnable((CompressState) compressFile));
+                if (compressFile instanceof CompressState) threadPool.execute(new CompressRunnable((CompressState) compressFile, (PictureViewSelectAdapter) adapter));
             }
         }
     }
 
     protected static class CompressRunnable implements Runnable {
-        private CompressState compressFile;
-        public CompressRunnable(CompressState compressFile) {
+        private final CompressState compressFile;
+        private final PictureViewSelectAdapter adapter;
+
+        public CompressRunnable(CompressState compressFile, PictureViewSelectAdapter adapter) {
             this.compressFile = compressFile;
+            this.adapter = adapter;
         }
+
         @Override
         public void run() {
+            // 如果列表里不包含这个文件, 所以该文件可能已经被用户移出了
+            if (!adapter.getDatas().contains(compressFile)) return;
+
             boolean compress = compressFile.compress();
             if (!compress) compressFile.checkCopyFile();
-            if (compress) Log.e(TAG, "压缩成功: " + compressFile);
-            else Log.e(TAG, "压缩失败: " + compressFile);
         }
     }
 

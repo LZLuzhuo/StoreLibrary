@@ -42,17 +42,7 @@ public class AudioCompressBean extends AudioFileBean implements CompressState{
         return "AudioCompressBean{" +
                 "compressPath='" + compressPath + '\'' +
                 ", compressState=" + compressState +
-                ", duration=" + duration +
-                ", id=" + id +
-                ", fileName='" + fileName + '\'' +
-                ", mimeType='" + mimeType + '\'' +
-                ", uriPath=" + uriPath +
-                ", urlPath='" + urlPath + '\'' +
-                ", bucketId=" + bucketId +
-                ", bucketName='" + bucketName + '\'' +
-                ", size=" + size +
-                ", addedDate=" + addedDate +
-                ", isOrigin=" + isOrigin +
+                ", " + super.toString() +
                 '}';
     }
 }

@@ -32,7 +32,7 @@ import me.luzhuo.lib_file.bean.VideoFileBean;
 import me.luzhuo.lib_file.store.FileStore;
 import me.luzhuo.lib_permission.Permission;
 import me.luzhuo.lib_permission.PermissionCallback;
-import me.luzhuo.lib_picture_compress.PictureSelectView;
+import me.luzhuo.lib_picture_compress.PictureSelectCompressView;
 import me.luzhuo.lib_picture_select.PictureSelectActivity;
 import me.luzhuo.lib_picture_select.PictureSelectUtils;
 
@@ -42,7 +42,7 @@ import static me.luzhuo.lib_picture_select.ui.PictureSelectHeaderBar.DefaultBuck
 /**
  * 底部有弹窗选择的Dialog
  */
-public class PictureSelectBottomDialogView extends PictureSelectView implements ICameraCallback, IVideoRecorderCallback, IAudioCallback {
+public class PictureSelectBottomDialogView extends PictureSelectCompressView implements ICameraCallback, IVideoRecorderCallback, IAudioCallback {
     public PictureSelectBottomDialogView(@NonNull Context context) {
         super(context);
     }

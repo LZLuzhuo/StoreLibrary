@@ -48,18 +48,7 @@ public class ImageCompressBean extends ImageFileBean implements CompressState {
         return "ImageCompressBean{" +
                 "compressPath='" + compressPath + '\'' +
                 ", compressState=" + compressState +
-                ", width=" + width +
-                ", height=" + height +
-                ", id=" + id +
-                ", fileName='" + fileName + '\'' +
-                ", mimeType='" + mimeType + '\'' +
-                ", uriPath=" + uriPath +
-                ", urlPath='" + urlPath + '\'' +
-                ", bucketId=" + bucketId +
-                ", bucketName='" + bucketName + '\'' +
-                ", size=" + size +
-                ", addedDate=" + addedDate +
-                ", isOrigin=" + isOrigin +
+                ", " + super.toString() +
                 '}';
     }
 }

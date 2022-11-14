@@ -1,4 +1,4 @@
-package me.luzhuo.storedemo;
+package me.luzhuo.storedemo.picture;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -13,14 +13,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import me.luzhuo.lib_core.ui.toast.ToastManager;
 import me.luzhuo.lib_file.bean.CheckableFileBean;
 import me.luzhuo.lib_file.bean.ImageFileBean;
-import me.luzhuo.lib_picture_compress.PictureSelectView;
+import me.luzhuo.lib_picture_compress.PictureSelectCompressView;
 import me.luzhuo.lib_picture_select_view.bean.ImageNetBean;
 import me.luzhuo.lib_picture_select_view.bean.VideoNetBean;
 import me.luzhuo.lib_picture_select_view.callback.PictureViewSelectCallback;
+import me.luzhuo.lib_picture_upload.PictureSelectUploadView;
+import me.luzhuo.storedemo.R;
 
 public class PictureActivity extends AppCompatActivity {
     private static final String TAG = PictureActivity.class.getSimpleName();
-    private PictureSelectView picture_select;
+    private PictureSelectUploadView picture_select;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,7 +30,11 @@ public class PictureActivity extends AppCompatActivity {
         setContentView(R.layout.activity_picture);
 
         picture_select = findViewById(R.id.picture_select);
-        picture_select.setPictureListener(new PictureViewSelectCallback() {
+
+
+
+
+        /*picture_select.setPictureListener(new PictureViewSelectCallback() {
             @Override
             public void onSelect(List<? extends CheckableFileBean> fileBeans) {
                 boolean notSupport = notSupport(fileBeans);
@@ -66,7 +72,7 @@ public class PictureActivity extends AppCompatActivity {
         images.add(new ImageNetBean("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fattach.bbs.miui.com%2Fforum%2F201311%2F01%2F215828tpmddz2d2bfcz5pk.jpg&refer=http%3A%2F%2Fattach.bbs.miui.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1619197782&t=8ec66be3937ab86f0e7edab59df271ca"));
         images.add(new ImageNetBean("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fattach.bbs.miui.com%2Fforum%2F201410%2F25%2F220832wlwzqq6ble9ql6rd.jpg&refer=http%3A%2F%2Fattach.bbs.miui.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1619197782&t=0631fd64899882e134049c4631e2eef8"));
         images.add(new VideoNetBean(null, "https://vd3.bdstatic.com/mda-khtuhgzs96xrn7sa/mda-khtuhgzs96xrn7sa.mp4?v_from_s=sz_videoui_4135&auth_key=1616607729-0-0-c8772210059111f2e9738b9eaa2b2138&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=3000156_3"));
-        picture_select.addDatas(images);
+        picture_select.addDatas(images);*/
     }
 
     private boolean notSupport(List<? extends CheckableFileBean> fileBeans) {

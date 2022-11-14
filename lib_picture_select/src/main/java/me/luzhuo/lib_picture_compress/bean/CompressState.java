@@ -8,22 +8,22 @@ import androidx.annotation.WorkerThread;
 public interface CompressState {
 
     /**
-     * 未开始
+     * 未开始 2
      */
     public static final int CompressStateStart = 1 << 1;
 
     /**
-     * 压缩中
+     * 压缩中 4
      */
     public static final int CompressStateCompressing = 1 << 2;
 
     /**
-     * 已结束
+     * 已结束 8
      */
     public static final int CompressStateEnded = 1 << 3;
 
     /**
-     * 压缩失败
+     * 压缩失败 16
      */
     public static final int CompressStateError = 1 << 4;
 
