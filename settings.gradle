@@ -1,4 +1,3 @@
 include ':app'
-rootProject.name = "StoreDemo"
+rootProject.name = "StoreLibrary"
 include ':lib_file'
-include ':lib_picture_select'
